@@ -43,6 +43,13 @@ app.*.map.json
 /android/app/profile
 /android/app/release
 
+# Signing secrets — never commit these
+/android/key.properties
+/android/keystore.p12
+/android/keystore.jks
+*.jks
+*.keystore
+
 add_translation.py
 
 */*/generated_*
