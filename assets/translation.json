@@ -520,7 +520,9 @@
     "All sources": "全部来源",
     "Releases page": "发布页",
     "Downloading update": "正在下载更新",
-    "Failed to download update": "下载更新失败"
+    "Failed to download update": "下载更新失败",
+    "Feedback": "反馈",
+    "Feedback, suggestions and help": "反馈、建议与帮助"
   },
   "zh_TW": {
     "Home": "首頁",
@@ -1043,6 +1045,8 @@
     "All sources": "全部來源",
     "Releases page": "發佈頁",
     "Downloading update": "正在下載更新",
-    "Failed to download update": "下載更新失敗"
+    "Failed to download update": "下載更新失敗",
+    "Feedback": "回饋",
+    "Feedback, suggestions and help": "回饋、建議與幫助"
   }
 }

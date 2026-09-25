@@ -72,6 +72,14 @@ class _AboutSettingsState extends State<AboutSettings> {
             launchUrlString("https://github.com/hea784/venera_0");
           },
         ).toSliver(),
+        ListTile(
+          title: Text("Feedback".tl),
+          subtitle: Text("Feedback, suggestions and help".tl),
+          trailing: const Icon(Icons.open_in_new),
+          onTap: () {
+            launchUrlString("https://github.com/hea784/venera_0/discussions");
+          },
+        ).toSliver(),
       ],
     );
   }

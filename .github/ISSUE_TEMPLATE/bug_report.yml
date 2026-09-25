@@ -1,0 +1,53 @@
+name: 🐞 Bug 报告
+description: 应用崩溃、功能异常、显示错误等问题
+labels: ["bug"]
+body:
+  - type: dropdown
+    id: version
+    attributes:
+      label: 应用版本
+      description: 关于页显示的版本，或手机系统设置 → 应用 → Venera 中的版本号
+      options:
+        - "1.6.6"
+        - "1.6.5"
+        - "1.6.4"
+        - "1.6.3-fork.5"
+        - "1.6.3-fork.4 或更早"
+        - 其他（请在描述中注明）
+    validations:
+      required: true
+  - type: dropdown
+    id: platform
+    attributes:
+      label: 设备与系统
+      options:
+        - Android 手机
+        - Android 平板 / 折叠屏
+        - Android 模拟器
+        - Windows / Linux / macOS
+    validations:
+      required: true
+  - type: textarea
+    id: what-happened
+    attributes:
+      label: 发生了什么？
+      description: 现象是什么？期望的行为是什么？
+    validations:
+      required: true
+  - type: textarea
+    id: reproduce
+    attributes:
+      label: 复现步骤
+      placeholder: |
+        1. 打开…
+        2. 点击…
+        3. 出现…
+  - type: textarea
+    id: logs
+    attributes:
+      label: 日志文件
+      description: 设置 → 调试 → 导出日志，把导出的日志文件拖拽到此处。崩溃类问题没有日志几乎无法定位。
+  - type: textarea
+    id: screenshots
+    attributes:
+      label: 截图（可选）

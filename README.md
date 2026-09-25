@@ -115,6 +115,12 @@ flutter build apk --release   # 需要 JDK 17、Android SDK 与 Rust
 - Flutter **3.41.4**（stable）与其余依赖版本见 `pubspec.yaml`；桌面端构建同理（`windows` / `linux` / `macos`）
 - 漫画源开发：[doc/comic_source.md](doc/comic_source.md) · JS API：[doc/js_api.md](doc/js_api.md)
 
+## 💬 反馈与交流
+
+- [**Discussions**](https://github.com/hea784/venera_0/discussions) —— 使用交流、功能建议、经验分享
+- [**Issue**](https://github.com/hea784/venera_0/issues/new/choose) —— Bug 报告与**漫画源故障**专用模板（源坏了走这个，带诊断项）
+- 提交 Bug / 源故障时，请附上 **设置 → 调试 → 导出日志** 导出的日志文件，定位快得多
+
 ## 🙏 致谢
 
 - [venera-app/venera](https://github.com/venera-app/venera) 与作者 [wgh136](https://github.com/wgh136) 的 [PicaComic](https://github.com/wgh136/PicaComic) —— 本项目的上游与前身

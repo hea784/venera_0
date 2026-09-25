@@ -1,0 +1,65 @@
+name: 📇 漫画源故障
+description: 某个漫画源无法搜索 / 打不开详情 / 加载不出图片
+labels: ["comic-source"]
+body:
+  - type: dropdown
+    id: source
+    attributes:
+      label: 故障的漫画源
+      options:
+        - 拷贝漫画
+        - MangaDex
+        - comick
+        - カドコミ（Comic Walker）
+        - 少年ジャンプ＋
+        - Komiic
+        - 包子漫画
+        - 动漫屋
+        - Mangabz
+        - 极速漫画
+        - 野蛮漫画
+        - 其他（请在描述中注明）
+    validations:
+      required: true
+  - type: dropdown
+    id: symptom
+    attributes:
+      label: 具体表现
+      options:
+        - 无法搜索
+        - 无法打开漫画详情
+        - 无法加载 / 显示图片
+        - 无法登录源账号
+        - 下载失败
+        - 其他
+    validations:
+      required: true
+  - type: dropdown
+    id: scope
+    attributes:
+      label: 影响范围
+      options:
+        - 完全不可用
+        - 部分内容不可用
+        - 速度极慢
+    validations:
+      required: true
+  - type: textarea
+    id: detail
+    attributes:
+      label: 详细描述
+      description: 报错信息原文、哪部漫画/哪些章节受影响、是否一直如此还是刚出现
+    validations:
+      required: true
+  - type: textarea
+    id: logs
+    attributes:
+      label: 日志文件
+      description: 设置 → 调试 → 导出日志，把导出的日志文件拖拽到此处
+  - type: checkboxes
+    id: network
+    attributes:
+      label: 网络环境
+      options:
+        - label: 已尝试切换网络 / 开关代理，问题依旧
+        - label: 浏览器直接访问该源网站也异常（说明是源站本身的问题）
