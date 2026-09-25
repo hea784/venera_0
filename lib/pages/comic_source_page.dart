@@ -24,7 +24,7 @@ class ComicSourcePage extends StatelessWidget {
   ]) async {
     if (!source.url.isURL) {
       if (showLoading) {
-        App.rootContext.showMessage(message: "Invalid url config");
+        App.rootContext.showMessage(message: "Invalid url config".tl);
         return;
       } else {
         throw Exception("Invalid url config");
@@ -174,18 +174,18 @@ class _BodyState extends State<_Body> {
         await showDialog(
           context: App.rootContext,
           builder: (context) => AlertDialog(
-            title: const Text("Reload Configs"),
+            title: Text("Reload Configs".tl),
             actions: [
               TextButton(
                 onPressed: () => Navigator.pop(context),
-                child: const Text("cancel"),
+                child: Text("Cancel".tl),
               ),
               TextButton(
                 onPressed: () async {
                   await ComicSourceManager().reload();
                   App.forceRebuild();
                 },
-                child: const Text("continue"),
+                child: Text("Continue".tl),
               ),
             ],
           ),
@@ -284,7 +284,7 @@ class _BodyState extends State<_Body> {
 
   void help() {
     launchUrlString(
-      "https://github.com/venera-app/venera/blob/master/doc/comic_source.md",
+      "https://github.com/hea784/venera_0/blob/master/doc/comic_source.md",
     );
   }
 
@@ -443,7 +443,7 @@ class _ComicSourceListState extends State<_ComicSourceList> {
                     TextButton(
                       onPressed: () {
                         launchUrlString(
-                          "https://github.com/venera-app/venera/blob/master/doc/comic_source.md",
+                          "https://github.com/hea784/venera_0/blob/master/doc/comic_source.md",
                         );
                       },
                       child: Text("Help".tl),

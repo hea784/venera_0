@@ -239,7 +239,7 @@ LoadingDialogController showLoadingDialog(
           });
         };
         return ContentDialog(
-          title: controller._message ?? 'Loading',
+          title: controller._message ?? 'Loading'.tl,
           content: LinearProgressIndicator(
             value: controller._progress,
             backgroundColor: context.colorScheme.surfaceContainer,

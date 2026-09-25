@@ -316,8 +316,8 @@ class _SingleExplorePageState extends AutomaticGlobalState<_SingleExplorePage>
         },
       );
     } else {
-      return const Center(
-        child: Text("Empty Page"),
+      return Center(
+        child: Text("Empty Page".tl),
       );
     }
   }
@@ -549,7 +549,7 @@ class _MultiPartExplorePageState extends State<_MultiPartExplorePage> {
   Widget build(BuildContext context) {
     if (loading) {
       load();
-      return const Center(
+      return Center(
         child: CircularProgressIndicator(),
       );
     } else if (message != null) {

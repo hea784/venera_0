@@ -6,6 +6,8 @@ import 'package:url_launcher/url_launcher_string.dart';
 import 'package:venera/foundation/app.dart';
 import 'package:venera/foundation/js_engine.dart';
 
+import 'package:venera/utils/translations.dart';
+
 import 'components.dart';
 
 mixin class JsUiApi {
@@ -84,7 +86,7 @@ mixin class JsUiApi {
         onPressed: () {
           dialogContext?.pop();
         },
-        child: Text('OK'),
+        child: Text('OK'.tl),
       ));
     }
     return showDialog(

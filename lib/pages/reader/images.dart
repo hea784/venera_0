@@ -200,6 +200,32 @@ class _GalleryModeState extends State<_GalleryMode>
 
   var imageStates = <State<ComicImage>>{};
 
+  /// How a single comic page is fitted into the viewport.
+  ///
+  /// * `contain` — show the whole page; tall pages get side bars.
+  /// * `fillWidth` — scale the page to the screen width and let the user pan
+  ///   vertically. Best for the long-strip pages common on mobile.
+  /// * `cover` — fill the whole screen, cropping whatever does not fit.
+  BoxFit get _pageFit {
+    switch (appdata.settings['readerImageFit']) {
+      case 'fillWidth':
+        return BoxFit.fitWidth;
+      case 'cover':
+        return BoxFit.cover;
+      default:
+        return BoxFit.contain;
+    }
+  }
+
+  /// Minimum scale for [_pageFit]. `fillWidth` must not shrink back to a
+  /// letterboxed size, otherwise the page would snap away from the edges.
+  PhotoViewComputedScale get _pageMinScale {
+    if (appdata.settings['readerImageFit'] == 'fillWidth') {
+      return PhotoViewComputedScale.covered;
+    }
+    return PhotoViewComputedScale.contained;
+  }
+
   bool isLongPressing = false;
 
   int fingers = 0;
@@ -342,7 +368,9 @@ class _GalleryModeState extends State<_GalleryMode>
                   context,
                   startIndex + 1,
                 ),
-                fit: BoxFit.contain,
+                fit: _pageFit,
+                minScale: _pageMinScale,
+                maxScale: _pageMinScale * 4,
                 errorBuilder: (_, error, s, retry) {
                   return NetworkError(message: error.toString(), retry: retry);
                 },

@@ -213,19 +213,19 @@ class _LogsPageState extends State<LogsPage> {
                     );
                     showMenu(context: context, position: position, items: [
                       PopupMenuItem(
-                          child: Text("all"),
+                          child: Text("all".tl),
                           onTap: () => setState(() => logLevelToShow = "all")
                       ),
                       PopupMenuItem(
-                          child: Text("info"),
+                          child: Text("info".tl),
                           onTap: () => setState(() => logLevelToShow = "info")
                       ),
                       PopupMenuItem(
-                          child: Text("warning"),
+                          child: Text("warning".tl),
                           onTap: () => setState(() => logLevelToShow = "warning")
                       ),
                       PopupMenuItem(
-                          child: Text("error"),
+                          child: Text("error".tl),
                           onTap: () => setState(() => logLevelToShow = "error")
                       ),
                     ]);
@@ -455,7 +455,7 @@ class _WebdavSettingState extends State<_WebdavSetting> {
                                   child: IconButton(
                                     icon: const Icon(Icons.open_in_new),
                                     onPressed: () {
-                                      launchUrlString("https://github.com/venera-app/venera/blob/b08f11f6ac49bd07d34b4fcde233ed07e86efbc9/lib/foundation/appdata.dart#L138");
+                                      launchUrlString("https://github.com/hea784/venera_0/blob/master/lib/foundation/appdata.dart");
                                     },
                                   ),
                                 ),

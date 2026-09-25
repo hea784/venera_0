@@ -217,6 +217,22 @@ class _ReaderSettingsState extends State<ReaderSettings> {
           comicSource: isEnabledSpecificSettings ? widget.comicSource : null,
           useDeviceSettings: useDeviceSpecificSettings,
         ).toSliver(),
+        SelectSetting(
+          title: "Page display".tl,
+          settingKey: "readerImageFit",
+          optionTranslation: {
+            "contain": "Fit whole page".tl,
+            "fillWidth": "Fill screen width".tl,
+            "cover": "Fill screen (crop)".tl,
+          },
+          onChanged: () {
+            setState(() {});
+            widget.onChanged?.call("readerImageFit");
+          },
+          comicId: isEnabledSpecificSettings ? widget.comicId : null,
+          comicSource: isEnabledSpecificSettings ? widget.comicSource : null,
+          useDeviceSettings: useDeviceSpecificSettings,
+        ).toSliver(),
         _SliderSetting(
           title: "Auto page turning interval".tl,
           settingsIndex: "autoPageTurningInterval",

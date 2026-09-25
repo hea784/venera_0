@@ -190,6 +190,10 @@ class Settings with ChangeNotifier {
     'defaultSearchTarget': null,
     'autoPageTurningInterval': 5, // in seconds
     'readerMode': 'galleryLeftToRight', // values of [ReaderMode]
+    // How a comic page is fitted to the screen:
+    // contain = show the whole page (letterboxed), fillWidth = scale up to the
+    // screen width and scroll vertically, cover = fill the screen and crop.
+    'readerImageFit': 'contain',
     'readerScreenPicNumberForLandscape': 1, // 1 - 5
     'readerScreenPicNumberForPortrait': 1, // 1 - 5
     'enableTapToTurnPages': true,
