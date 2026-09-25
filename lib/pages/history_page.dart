@@ -4,6 +4,7 @@ import 'package:venera/foundation/app.dart';
 import 'package:venera/foundation/comic_source/comic_source.dart';
 import 'package:venera/foundation/comic_type.dart';
 import 'package:venera/foundation/history.dart';
+import 'package:venera/pages/reading_stats_page.dart';
 import 'package:venera/utils/translations.dart';
 
 class HistoryPage extends StatefulWidget {
@@ -23,6 +24,7 @@ class _HistoryPageState extends State<HistoryPage> {
   @override
   void dispose() {
     HistoryManager().removeListener(onUpdate);
+    searchController.dispose();
     super.dispose();
   }
 
@@ -40,6 +42,18 @@ class _HistoryPageState extends State<HistoryPage> {
 
   var comics = HistoryManager().getAll();
   var controller = FlyoutController();
+
+  bool searchMode = false;
+  String searchQuery = '';
+  var searchController = TextEditingController();
+
+  void _exitSearch() {
+    setState(() {
+      searchMode = false;
+      searchQuery = '';
+      searchController.clear();
+    });
+  }
 
   bool multiSelectMode = false;
   Map<History, bool> selectedComics = {};
@@ -182,6 +196,24 @@ class _HistoryPageState extends State<HistoryPage> {
 
     List<Widget> normalActions = [
       IconButton(
+        icon: const Icon(Icons.insights),
+        tooltip: 'Reading Stats'.tl,
+        onPressed: () {
+          context.to(() => const ReadingStatsPage());
+        },
+      ),
+      IconButton(
+        icon: const Icon(Icons.search),
+        tooltip: 'Search'.tl,
+        onPressed: () {
+          setState(() {
+            searchMode = true;
+            multiSelectMode = false;
+            selectedComics.clear();
+          });
+        },
+      ),
+      IconButton(
         icon: const Icon(Icons.refresh),
         tooltip: 'Refresh All Histories'.tl,
         onPressed: _refreshAllHistories,
@@ -234,13 +266,15 @@ class _HistoryPageState extends State<HistoryPage> {
     ];
 
     return PopScope(
-      canPop: !multiSelectMode,
+      canPop: !multiSelectMode && !searchMode,
       onPopInvokedWithResult: (didPop, result) {
         if (multiSelectMode) {
           setState(() {
             multiSelectMode = false;
             selectedComics.clear();
           });
+        } else if (searchMode) {
+          _exitSearch();
         }
       },
       child: Scaffold(
@@ -256,6 +290,8 @@ class _HistoryPageState extends State<HistoryPage> {
                         multiSelectMode = false;
                         selectedComics.clear();
                       });
+                    } else if (searchMode) {
+                      _exitSearch();
                     } else {
                       context.pop();
                     }
@@ -267,11 +303,33 @@ class _HistoryPageState extends State<HistoryPage> {
               ),
               title: multiSelectMode
                   ? Text(selectedComics.length.toString())
+                  : searchMode
+                  ? TextField(
+                      controller: searchController,
+                      autofocus: true,
+                      decoration: InputDecoration(
+                        hintText: "Search History".tl,
+                        border: InputBorder.none,
+                      ),
+                      onChanged: (value) {
+                        setState(() {
+                          searchQuery = value;
+                        });
+                      },
+                    )
                   : Text('History'.tl),
               actions: multiSelectMode ? selectActions : normalActions,
             ),
             SliverGridComics(
-              comics: comics,
+              comics: searchQuery.isEmpty
+                  ? comics
+                  : comics
+                        .where(
+                          (c) => c.title.toLowerCase().contains(
+                            searchQuery.toLowerCase(),
+                          ),
+                        )
+                        .toList(),
               selections: selectedComics,
               onLongPressed: null,
               onTap: multiSelectMode

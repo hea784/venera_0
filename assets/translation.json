@@ -504,7 +504,15 @@
     "all": "全部",
     "info": "信息",
     "warning": "警告",
-    "error": "错误"
+    "error": "错误",
+    "Night filter": "夜间滤光",
+    "Filter opacity": "滤光强度",
+    "Reading Stats": "阅读统计",
+    "Comics read": "已读漫画",
+    "Chapters read": "已读章节",
+    "Active days": "活跃天数",
+    "Daily reading": "每日阅读",
+    "Last 30 days": "近 30 天"
   },
   "zh_TW": {
     "Home": "首頁",
@@ -1011,6 +1019,14 @@
     "all": "全部",
     "info": "資訊",
     "warning": "警告",
-    "error": "錯誤"
+    "error": "錯誤",
+    "Night filter": "夜間濾光",
+    "Filter opacity": "濾光強度",
+    "Reading Stats": "閱讀統計",
+    "Comics read": "已讀漫畫",
+    "Chapters read": "已讀章節",
+    "Active days": "活躍天數",
+    "Daily reading": "每日閱讀",
+    "Last 30 days": "近 30 天"
   }
 }

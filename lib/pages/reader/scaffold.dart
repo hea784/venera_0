@@ -135,6 +135,28 @@ class _ReaderScaffoldState extends State<_ReaderScaffold> {
             child: widget.child,
           ),
         ),
+        if (appdata.settings.getReaderSetting(
+              context.reader.cid,
+              context.reader.type.sourceKey,
+              'enableReaderFilter',
+            ) ==
+            true)
+          Positioned.fill(
+            child: IgnorePointer(
+              child: ColoredBox(
+                color: Colors.black.toOpacity(
+                  (appdata.settings.getReaderSetting(
+                            context.reader.cid,
+                            context.reader.type.sourceKey,
+                            'readerFilterOpacity',
+                          )
+                          as num)
+                      .toDouble() /
+                      100,
+                ),
+              ),
+            ),
+          ),
         if (appdata.settings['showPageNumberInReader'] == true && !isOnChapterCommentsPage)
           buildPageInfoText(),
         if (!isOnChapterCommentsPage)

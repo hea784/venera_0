@@ -233,6 +233,40 @@ class _ReaderSettingsState extends State<ReaderSettings> {
           comicSource: isEnabledSpecificSettings ? widget.comicSource : null,
           useDeviceSettings: useDeviceSpecificSettings,
         ).toSliver(),
+        _SwitchSetting(
+          title: "Night filter".tl,
+          settingKey: "enableReaderFilter",
+          onChanged: () {
+            setState(() {});
+            widget.onChanged?.call("enableReaderFilter");
+          },
+          comicId: isEnabledSpecificSettings ? widget.comicId : null,
+          comicSource: isEnabledSpecificSettings ? widget.comicSource : null,
+          useDeviceSettings: useDeviceSpecificSettings,
+        ).toSliver(),
+        SliverAnimatedVisibility(
+          visible:
+              appdata.settings.getReaderSetting(
+                comicId ?? '',
+                sourceKey ?? '',
+                'enableReaderFilter',
+              ) ==
+              true,
+          child: _SliderSetting(
+            title: "Filter opacity".tl,
+            settingsIndex: "readerFilterOpacity",
+            interval: 5,
+            min: 5,
+            max: 80,
+            onChanged: () {
+              setState(() {});
+              widget.onChanged?.call("readerFilterOpacity");
+            },
+            comicId: isEnabledSpecificSettings ? widget.comicId : null,
+            comicSource: isEnabledSpecificSettings ? widget.comicSource : null,
+            useDeviceSettings: useDeviceSpecificSettings,
+          ),
+        ),
         _SliderSetting(
           title: "Auto page turning interval".tl,
           settingsIndex: "autoPageTurningInterval",

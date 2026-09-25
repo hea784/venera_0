@@ -241,6 +241,8 @@ class Settings with ChangeNotifier {
     'showChapterComments': true, // show chapter comments in reader
     'showChapterCommentsAtEnd':
         false, // show chapter comments at end of chapter
+    'enableReaderFilter': false, // dark overlay over reader content
+    'readerFilterOpacity': 30, // 5 - 80, percent of black overlay opacity
   };
 
   operator [](String key) {
