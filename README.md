@@ -32,8 +32,20 @@
 **构建**
 - 独立 Android 构建流水线：`build-android.yml` 可手动触发或打 `v*` tag 触发，自动产出已签名的 release APK 并上传产物 / 发布 Release。
 - 保留 Flutter 迁移器写入的 AGP 兼容开关，新版 Flutter 也能本地构建；签名密钥文件已加入 `.gitignore`。
+- 安装包同时启用 **v1 / v2 / v3 签名方案**，兼容 Android 6 及以上、以及签名校验较严格的国产 ROM。
+- 使用本 fork 独立版本号（`1.6.3-fork.x`），与官方 `1.6.3` 区分；本 fork 各版本之间签名一致，可直接覆盖升级。
 
 > 上游的 `feat/cdn`、`feat/button-layout` 等实验分支均已落后 master（无独有改动），本 fork 直接基于最新的 master。
+
+### ⚠️ 从官方版迁移到本 fork（重要）
+
+本 fork 使用**自己的签名密钥**，与官方 venera / F-Droid 版不同。Android 禁止用不同签名覆盖安装，因此**从官方版升级时必须先卸载旧版**：
+
+1. （可选但推荐）先在旧版 **设置 → Data Sync** 备份数据，或手动记下已配置的漫画源
+2. 卸载旧版 venera
+3. 安装本 fork 的 APK
+
+> 如果你之前装过本仓库发布的 `v1.6.3-fork.1` / `fork.2`，签名一致，**可以直接覆盖升级，无需卸载**。
 
 ### 获取 Android 安装包
 
