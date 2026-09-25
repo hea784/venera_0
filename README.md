@@ -71,7 +71,7 @@ A maintained fork of [Venera](https://github.com/venera-app/venera), a comic rea
 2. 卸载旧版 venera
 3. 安装本 fork 的 APK
 
-> 之前装过 `v1.6.3-fork.1` / `fork.2` / `fork.3` 的签名一致，**直接覆盖升级即可**。
+> 之前装过 `v1.6.3-fork.1` ~ `fork.4` 的签名一致，**直接覆盖升级即可**。
 
 ## 🧩 已有功能（继承自上游）
 
