@@ -45,6 +45,19 @@ A maintained fork of [Venera](https://github.com/venera-app/venera), a comic rea
 - 取消下载后的协程死锁、文件句柄与定时器泄漏
 - 图片收藏传错 id、取消收藏后缓存永不清理
 
+### 📚 书源扩展（1.6.4 起）
+
+默认源列表切换为本项目维护的扩展列表（**37 个源**）：上游
+[venera-app/venera-configs](https://github.com/venera-app/venera-configs) 全部 33 个源
+（拷贝漫画、MangaDex、comick、カドコミ、少年ジャンプ＋ 等，经 jsdelivr 直链**自动跟进上游更新**），
+外加 4 个**逐文件安全审计**的免费源：
+
+- **动漫屋** / **Mangabz** / **极速漫画** / **野蛮漫画** —— 免费中文漫画站
+
+每个新增源都经过语法校验、域名白名单核对与可疑模式扫描，审计记录见
+[hea784/venera-configs](https://github.com/hea784/venera-configs)。想只用上游原始列表，
+在「漫画源 → 仓库 URL」改回 `https://cdn.jsdelivr.net/gh/venera-app/venera-configs@main/index.json` 即可。
+
 ### 🌏 全量汉化
 
 - 界面文案**简体 / 繁体全量覆盖（零缺失）**，补齐上游遗留的未翻译字符串
@@ -53,6 +66,7 @@ A maintained fork of [Venera](https://github.com/venera-app/venera), a comic rea
 ### 🔗 仓库指向与构建
 
 - 关于页、更新检查、帮助文档链接均指向本 fork，应用内可直接检查 fork 更新
+- **1.6.4 起版本号回归标准语义**（不再用 fork 后缀）；同时修复了更新检查按钮对 `1.6.3-fork.x` 类版本号必然崩溃的问题
 - 独立构建流水线：打 `v*` tag 即自动构建**已签名** release APK 并发布
 - APK 同时启用 **v1 / v2 / v3 签名方案**，兼容 Android 6+ 及签名校验较严格的国产 ROM
 - 独立版本号 `1.6.3-fork.x`，与官方 `1.6.3` 区分；各 fork 版本间签名一致，可直接覆盖升级
@@ -71,7 +85,7 @@ A maintained fork of [Venera](https://github.com/venera-app/venera), a comic rea
 2. 卸载旧版 venera
 3. 安装本 fork 的 APK
 
-> 之前装过 `v1.6.3-fork.1` ~ `fork.4` 的签名一致，**直接覆盖升级即可**。
+> 本 fork 历代版本（`v1.6.3-fork.1` ~ `fork.5`、`v1.6.4+`）签名一致，**直接覆盖升级即可**。
 
 ## 🧩 已有功能（继承自上游）
 

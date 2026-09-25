@@ -72,13 +72,6 @@ class _AboutSettingsState extends State<AboutSettings> {
             launchUrlString("https://github.com/hea784/venera_0");
           },
         ).toSliver(),
-        ListTile(
-          title: const Text("Telegram"),
-          trailing: const Icon(Icons.open_in_new),
-          onTap: () {
-            launchUrlString("https://t.me/venera_release");
-          },
-        ).toSliver(),
       ],
     );
   }
@@ -90,7 +83,7 @@ Future<bool> checkUpdate() async {
   if (res.statusCode == 200) {
     var data = loadYaml(res.data);
     if (data["version"] != null) {
-      return _compareVersion(data["version"].split("+")[0], App.version);
+      return compareVersion(data["version"].split("+")[0], App.version);
     }
   }
   return false;
@@ -129,20 +122,8 @@ Future<void> checkUpdateUi([bool showMessageIfNoUpdate = true, bool delay = fals
     }
   } catch (e, s) {
     Log.error("Check Update", e.toString(), s);
-  }
-}
-
-/// return true if version1 > version2
-bool _compareVersion(String version1, String version2) {
-  var v1 = version1.split(".");
-  var v2 = version2.split(".");
-  for (var i = 0; i < v1.length; i++) {
-    if (int.parse(v1[i]) > int.parse(v2[i])) {
-      return true;
-    }
-    if (int.parse(v1[i]) < int.parse(v2[i])) {
-      return false;
+    if (showMessageIfNoUpdate) {
+      App.rootContext.showMessage(message: "Update check failed".tl);
     }
   }
-  return false;
 }
