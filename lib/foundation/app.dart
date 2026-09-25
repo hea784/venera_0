@@ -2,6 +2,7 @@ import 'dart:io';
 import 'dart:ui';
 
 import 'package:flutter/material.dart';
+import 'package:package_info_plus/package_info_plus.dart';
 import 'package:path_provider/path_provider.dart';
 import 'package:venera/foundation/history.dart';
 
@@ -13,7 +14,10 @@ export "widget_utils.dart";
 export "context.dart";
 
 class _App {
-  final version = "1.6.3";
+  /// The versionName from the package metadata, set in [init].
+  /// Kept as a mutable field with the legacy fallback so code that runs
+  /// before init (and tests) still sees a value instead of crashing.
+  String version = "1.6.3";
 
   bool get isAndroid => Platform.isAndroid;
 
@@ -96,6 +100,7 @@ class _App {
     if (isAndroid) {
       externalStoragePath = (await getExternalStorageDirectory())!.path;
     }
+    version = (await PackageInfo.fromPlatform()).version;
     isInitialized = true;
   }
 
