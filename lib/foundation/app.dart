@@ -36,8 +36,13 @@ class _App {
 
   Locale get locale {
     Locale deviceLocale = PlatformDispatcher.instance.locale;
+    // Traditional Chinese may be reported as zh-Hant (script) or zh-TW/zh-HK
+    // (region) depending on the platform. Treat all of them as zh_TW.
     if (deviceLocale.languageCode == "zh" &&
-        deviceLocale.scriptCode == "Hant") {
+        (deviceLocale.scriptCode == "Hant" ||
+            deviceLocale.countryCode == "TW" ||
+            deviceLocale.countryCode == "HK" ||
+            deviceLocale.countryCode == "MO")) {
       deviceLocale = const Locale("zh", "TW");
     }
     if (appdata.settings['language'] != 'system') {
@@ -45,6 +50,12 @@ class _App {
         appdata.settings['language'].split('-')[0],
         appdata.settings['language'].split('-')[1],
       );
+    }
+    // This build only ships zh_CN / zh_TW translations. Fall back to zh_CN so
+    // that a non-Chinese system locale still gets a translated UI instead of
+    // raw English source strings.
+    if (deviceLocale.languageCode != "zh") {
+      return const Locale("zh", "CN");
     }
     return deviceLocale;
   }

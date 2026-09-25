@@ -195,7 +195,7 @@ class Settings with ChangeNotifier {
     'enableTapToTurnPages': true,
     'reverseTapToTurnPages': false,
     'enablePageAnimation': true,
-    'language': 'system', // system, zh-CN, zh-TW, en-US
+    'language': 'system', // system, zh-CN, zh-TW
     'cacheSize': 2048, // in MB
     'downloadThreads': 5,
     'enableLongPressToZoom': true,

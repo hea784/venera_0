@@ -151,7 +151,6 @@ class _AppSettingsState extends State<AppSettings> {
             "system": "System",
             "zh-CN": "简体中文",
             "zh-TW": "繁體中文",
-            "en-US": "English",
           },
           onChanged: () {
             App.forceRebuild();
