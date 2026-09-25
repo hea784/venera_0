@@ -105,6 +105,7 @@ class FileDownloader {
   }
 
   void _download(StreamController<DownloadingStatus> resultStream) async {
+    Timer? progressTimer;
     try {
       var proxy = await getProxy();
       _dio.httpClientAdapter = IOHttpClientAdapter(
@@ -113,11 +114,21 @@ class FileDownloader {
             ..findProxy = (uri) => proxy == null ? "DIRECT" : "PROXY $proxy";
         },
       );
+      // A stuck HEAD would otherwise block cancellation indefinitely.
+      _dio.options
+        ..connectTimeout = const Duration(seconds: 15)
+        ..receiveTimeout = const Duration(seconds: 30)
+        ..sendTimeout = const Duration(seconds: 30);
 
       // get file size
       await _createTasks();
 
-      if (_canceled) return;
+      if (_canceled) {
+        await _file?.close();
+        _file = null;
+        if (!resultStream.isClosed) resultStream.close();
+        return;
+      }
 
       // check if file is downloaded
       if (_currentBytes >= _fileSize) {
@@ -130,20 +141,22 @@ class FileDownloader {
 
       _reportStatus(resultStream);
 
-      Timer.periodic(const Duration(seconds: 1), (timer) {
+      progressTimer = Timer.periodic(const Duration(seconds: 1), (timer) {
         if (_canceled || _currentBytes >= _fileSize) {
           timer.cancel();
           return;
         }
-        resultStream.add(DownloadingStatus(
-            _currentBytes, _fileSize, _currentBytes - _lastBytes));
+        if (!resultStream.isClosed) {
+          resultStream.add(DownloadingStatus(
+              _currentBytes, _fileSize, _currentBytes - _lastBytes));
+        }
         _lastBytes = _currentBytes;
       });
 
       // start downloading
       await _scheduleDownload();
       if (_canceled) {
-        resultStream.close();
+        if (!resultStream.isClosed) resultStream.close();
         return;
       }
       await _file!.close();
@@ -152,19 +165,28 @@ class FileDownloader {
 
       // check if download is finished
       if (_currentBytes < _fileSize) {
-        resultStream
-            .addError(Exception("Download failed: Expected $_fileSize bytes, "
-                "but only $_currentBytes bytes downloaded."));
-        resultStream.close();
+        if (!resultStream.isClosed) {
+          resultStream.addError(Exception(
+              "Download failed: Expected $_fileSize bytes, "
+              "but only $_currentBytes bytes downloaded."));
+          resultStream.close();
+        }
+        return;
       }
 
-      resultStream.add(DownloadingStatus(_currentBytes, _fileSize, 0, true));
-      resultStream.close();
+      if (!resultStream.isClosed) {
+        resultStream.add(DownloadingStatus(_currentBytes, _fileSize, 0, true));
+        resultStream.close();
+      }
     } catch (e, s) {
       await _file?.close();
       _file = null;
-      resultStream.addError(e, s);
-      resultStream.close();
+      if (!resultStream.isClosed) {
+        resultStream.addError(e, s);
+        resultStream.close();
+      }
+    } finally {
+      progressTimer?.cancel();
     }
   }
 
@@ -213,6 +235,13 @@ class FileDownloader {
     if (_canceled) return;
     if (res.data == null) {
       throw Exception("Failed to block $start-$end");
+    }
+    // The server must honour the Range header. If it replies 200 with the whole
+    // body, writing it at the block offset would silently corrupt the file.
+    final status = res.statusCode ?? 0;
+    if (status != 206 && block.downloadedBytes < block.end - block.start) {
+      throw Exception(
+          "Server does not support range requests (status $status) for $url");
     }
 
     var buffer = <int>[];

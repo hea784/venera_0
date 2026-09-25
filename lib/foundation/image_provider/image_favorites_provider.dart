@@ -82,9 +82,15 @@ class ImageFavoritesProvider
     return await file.readAsBytes();
   }
 
+  /// The cache key must stay in sync with [key] so that writes, reads and
+  /// deletes all address the same file.
+  static String _cacheKey(ImageFavorite imageFavorite) =>
+      "ImageFavorites ${imageFavorite.imageKey}@${imageFavorite.sourceKey}@${imageFavorite.id}@${imageFavorite.eid}";
+
   /// Delete a image favorite cache
   static Future<void> deleteFromCache(ImageFavorite imageFavorite) async {
-    var fileName = md5.convert(imageFavorite.imageKey.codeUnits).toString();
+    var fileName =
+        md5.convert(_cacheKey(imageFavorite).codeUnits).toString();
     var file = File(FilePath.join(App.cachePath, 'image_favorites', fileName));
     if (file.existsSync()) {
       await file.delete();
@@ -93,7 +99,7 @@ class ImageFavoritesProvider
 
   Future<Uint8List?> getImageFromLocal() async {
     var localComic =
-        LocalManager().find(sourceKey, ComicType.fromKey(sourceKey));
+        LocalManager().find(cid, ComicType.fromKey(sourceKey));
     if (localComic == null) {
       return null;
     }

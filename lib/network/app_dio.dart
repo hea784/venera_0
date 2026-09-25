@@ -173,11 +173,13 @@ class AppDio with DioMixin {
     ProgressCallback? onSendProgress,
     ProgressCallback? onReceiveProgress,
   }) async {
+    var registeredLock = false;
     if (options?.headers?['prevent-parallel'] == 'true') {
       while (_requests.containsKey(path)) {
         await Future.delayed(const Duration(milliseconds: 20));
       }
       _requests[path] = true;
+      registeredLock = true;
       options!.headers!.remove('prevent-parallel');
     }
     try {
@@ -201,7 +203,9 @@ class AppDio with DioMixin {
         }
       }
     } finally {
-      if (_requests.containsKey(path)) {
+      // Only release the lock if this request actually acquired it, otherwise a
+      // concurrent plain request would clear another request's lock.
+      if (registeredLock) {
         _requests.remove(path);
       }
     }

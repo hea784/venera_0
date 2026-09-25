@@ -254,6 +254,7 @@ class _ReaderScaffoldState extends State<_ReaderScaffold> {
   }
 
   void addImageFavorite() async {
+    if (context.reader.images == null || context.reader.isLoading) return;
     try {
       if (context.reader.images![0].contains('file://')) {
         showToast(
@@ -965,12 +966,17 @@ class _BatteryWidgetState extends State<_BatteryWidget> {
     try {
       _batteryLevel = await _battery.batteryLevel;
       state = await _battery.batteryState;
+      if (!mounted) return;
       if (_batteryLevel > 0 && state != BatteryState.unknown) {
         setState(() {
           _hasBattery = true;
         });
         _timer = Timer.periodic(const Duration(seconds: 1), (timer) {
           _battery.batteryLevel.then((level) {
+            if (!mounted) {
+              timer.cancel();
+              return;
+            }
             if (_batteryLevel != level) {
               setState(() {
                 _batteryLevel = level;

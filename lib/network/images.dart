@@ -37,10 +37,11 @@ abstract class ImageDownloader {
     }
 
     if (((configs['url'] as String?) ?? url).startsWith('cover.') &&
-        sourceKey != null) {
+        sourceKey != null &&
+        cid != null) {
       var comicSource = ComicSource.find(sourceKey);
-      if(comicSource != null) {
-        var comicInfo = await comicSource.loadComicInfo!(cid!);
+      if (comicSource != null && comicSource.loadComicInfo != null) {
+        var comicInfo = await comicSource.loadComicInfo!(cid);
         yield* loadThumbnail(comicInfo.data.cover, sourceKey);
         return;
       }

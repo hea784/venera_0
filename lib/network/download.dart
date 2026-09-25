@@ -367,6 +367,10 @@ class ImagesDownloadTask extends DownloadTask with _TransferSpeedMixin {
             }
           });
           if (!_isRunning) {
+            // Interrupted mid-fetch: discard the partial chapter list, otherwise
+            // resume() would treat it as complete and silently save a comic
+            // that is missing chapters.
+            _images = null;
             return;
           }
           if (res.error) {
@@ -385,13 +389,19 @@ class ImagesDownloadTask extends DownloadTask with _TransferSpeedMixin {
     }
 
     while (_chapter < _images!.length) {
+      if (!_isRunning) {
+        return;
+      }
       var images = _images![_images!.keys.elementAt(_chapter)]!;
       tasks.clear();
       while (_index < images.length) {
+        if (!_isRunning) {
+          return;
+        }
         _scheduleTasks();
         var task = tasks[_index]!;
         await task.wait();
-        if (isPaused) {
+        if (!_isRunning || isPaused) {
           return;
         }
         if (task.error != null) {
@@ -558,7 +568,16 @@ class _ImageDownloadWrapper {
   bool isCancelled = false;
 
   void cancel() {
+    if (isCancelled) return;
     isCancelled = true;
+    // Release anyone blocked in wait(), otherwise cancellation never completes
+    // and the partial download directory is left behind.
+    for (var c in completers) {
+      if (!c.isCompleted) {
+        c.complete(this);
+      }
+    }
+    completers.clear();
   }
 
   var completers = <Completer<_ImageDownloadWrapper>>[];
@@ -581,7 +600,9 @@ class _ImageDownloadWrapper {
           await file.writeAsBytes(p.imageBytes!);
           isComplete = true;
           for (var c in completers) {
-            c.complete(this);
+            if (!c.isCompleted) {
+              c.complete(this);
+            }
           }
           completers.clear();
         }

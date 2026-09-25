@@ -51,6 +51,7 @@ class _ReaderImagesState extends State<_ReaderImages> {
           reader.type,
           reader.chapter,
         );
+        if (!mounted) return;
         setState(() {
           reader.images = images;
           reader.isLoading = false;
@@ -61,6 +62,7 @@ class _ReaderImagesState extends State<_ReaderImages> {
           });
         });
       } catch (e) {
+        if (!mounted) return;
         setState(() {
           error = e.toString();
           reader.isLoading = false;
@@ -73,6 +75,7 @@ class _ReaderImagesState extends State<_ReaderImages> {
         reader.widget.cid,
         cp,
       );
+      if (!mounted) return;
       if (res.error) {
         setState(() {
           error = res.errorMessage;
@@ -91,7 +94,7 @@ class _ReaderImagesState extends State<_ReaderImages> {
         });
       }
     }
-    context.readerScaffold.update();
+    if (mounted) context.readerScaffold.update();
   }
 
   @override
@@ -505,7 +508,8 @@ class _GalleryModeState extends State<_GalleryMode>
       context.readerScaffold.addImageFavorite();
       return;
     }
-    var controller = photoViewControllers[reader.page]!;
+    var controller = photoViewControllers[reader.page];
+    if (controller == null) return;
     controller.onDoubleClick?.call();
   }
 
@@ -514,7 +518,8 @@ class _GalleryModeState extends State<_GalleryMode>
     if (!appdata.settings['enableLongPressToZoom'] || fingers != 1) {
       return;
     }
-    var photoViewController = photoViewControllers[reader.page]!;
+    var photoViewController = photoViewControllers[reader.page];
+    if (photoViewController == null) return;
     double target = photoViewController.getInitialScale!.call()! * 1.75;
     var size = reader.size;
     Offset zoomPosition;
@@ -535,7 +540,11 @@ class _GalleryModeState extends State<_GalleryMode>
     if (!appdata.settings['enableLongPressToZoom'] || !isLongPressing) {
       return;
     }
-    var photoViewController = photoViewControllers[reader.page]!;
+    var photoViewController = photoViewControllers[reader.page];
+    if (photoViewController == null) {
+      isLongPressing = false;
+      return;
+    }
     double target = photoViewController.getInitialScale!.call()!;
     photoViewController.animateScale?.call(target);
     isLongPressing = false;

@@ -52,6 +52,7 @@ class _ChapterCommentsPageState extends State<ChapterCommentsPage> {
       widget.replyComment?.id,
     );
     if (res.error) {
+      if (!mounted) return;
       setState(() {
         _error = res.errorMessage;
         _loading = false;
@@ -73,6 +74,7 @@ class _ChapterCommentsPageState extends State<ChapterCommentsPage> {
       _page + 1,
       widget.replyComment?.id,
     );
+    if (!mounted) return;
     if (res.error) {
       context.showMessage(message: res.errorMessage ?? "Unknown Error");
     } else {
@@ -85,6 +87,12 @@ class _ChapterCommentsPageState extends State<ChapterCommentsPage> {
         }
       });
     }
+  }
+
+  @override
+  void dispose() {
+    controller.dispose();
+    super.dispose();
   }
 
   @override
@@ -255,6 +263,7 @@ class _ChapterCommentsPageState extends State<ChapterCommentsPage> {
                     controller.text,
                     widget.replyComment?.id,
                   );
+                  if (!mounted) return;
                   if (!b.error) {
                     controller.text = "";
                     setState(() {
@@ -449,6 +458,7 @@ class _ChapterCommentTileState extends State<_ChapterCommentTile> {
             widget.comment.id!,
             !isLiked,
           );
+          if (!mounted) return;
           if (res.success) {
             isLiked = !isLiked;
             likes += isLiked ? 1 : -1;
@@ -505,6 +515,7 @@ class _ChapterCommentTileState extends State<_ChapterCommentTile> {
       isUp,
       isCancel,
     );
+    if (!mounted) return;
     if (res.success) {
       if (isCancel) {
         voteStatus = 0;
