@@ -19,6 +19,20 @@ A maintained fork of [Venera](https://github.com/venera-app/venera), a comic rea
 
 ---
 
+## 📸 截图
+
+<div align="center">
+<table><tr>
+<td><img src="docs/screenshots/home.png" width="200"/><br/><sub>主页</sub></td>
+<td><img src="docs/screenshots/reader_filter.png" width="200"/><br/><sub>阅读器 · 夜间滤光</sub></td>
+<td><img src="docs/screenshots/reading_stats.png" width="200"/><br/><sub>阅读统计</sub></td>
+</tr><tr>
+<td><img src="docs/screenshots/history.png" width="200"/><br/><sub>历史</sub></td>
+<td><img src="docs/screenshots/history_search.png" width="200"/><br/><sub>历史搜索</sub></td>
+<td><img src="docs/screenshots/night_filter_setting.png" width="200"/><br/><sub>夜间滤光设置</sub></td>
+</tr></table>
+</div>
+
 ## ✨ 本 fork 增强了什么
 
 ### 🆕 新功能（借鉴 [Mihon](https://github.com/mihonapp/mihon) / [Kotatsu](https://github.com/KotatsuApp/Kotatsu) 等优秀阅读器）
