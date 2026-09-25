@@ -1,109 +1,105 @@
-# Due to my limited time and energy, this project is no longer maintained. Feel free to fork it.
-# 由于本人精力有限, 此项目已停止维护, 欢迎fork
+<div align="center">
+
+# Venera (hea784 fork)
+
+**上游 [venera-app/venera](https://github.com/venera-app/venera) 已停止维护，本仓库在其基础上持续维护 —— 专注 Android 体验：网络增强、稳定性修复、全量汉化、更舒服的阅读功能**
+
+A maintained fork of [Venera](https://github.com/venera-app/venera), a comic reader supporting local and network comics — with Android-first improvements and signed APK releases.
+
+[![Build Android APK](https://github.com/hea784/venera_0/actions/workflows/build-android.yml/badge.svg)](https://github.com/hea784/venera_0/actions/workflows/build-android.yml)
+[![Release](https://img.shields.io/github/v/release/hea784/venera_0)](https://github.com/hea784/venera_0/releases)
+[![License](https://img.shields.io/github/license/hea784/venera_0)](LICENSE)
+[![Flutter](https://img.shields.io/badge/flutter-3.41.4-02569B?logo=flutter)](https://flutter.dev)
+[![Platform](https://img.shields.io/badge/platform-Android%206%2B-3DDC84?logo=android&logoColor=white)](https://github.com/hea784/venera_0/releases)
+[![Upstream](https://img.shields.io/badge/upstream-venera--app%2Fvenera-8A2BE2)](https://github.com/venera-app/venera)
+
+**[📥 下载安装包](https://github.com/hea784/venera_0/releases/latest)** · [从源码构建](#-从源码构建) · [从官方版迁移](#️-从官方版迁移到本-fork重要) · [创建漫画源](doc/comic_source.md)
+
+</div>
 
 ---
 
-## 🌐 本仓库（hea784/venera_0）：Venera 的维护 fork
+## ✨ 本 fork 增强了什么
 
-这是 [venera-app/venera](https://github.com/venera-app/venera) 的一个持续维护分支，针对**移动端（Android）使用体验**做了优化，并提供开箱即用的 Android 安装包。
+### 🆕 新功能（借鉴 [Mihon](https://github.com/mihonapp/mihon) / [Kotatsu](https://github.com/KotatsuApp/Kotatsu) 等优秀阅读器）
 
-### 相对上游的改动
+| 功能 | 说明 |
+|---|---|
+| 🌙 **夜间滤光** | 阅读器可叠加黑色遮罩降低画面亮度，强度 5%–80% 连续可调，保护夜间观感，无需依赖系统亮度；支持漫画级 / 设备级设置 |
+| 📊 **阅读统计** | 已读漫画数、已读章节数、活跃天数，以及近 30 天每日阅读柱状图；入口在「历史」页右上角 |
+| 🔍 **历史搜索** | 历史页新增标题关键词搜索，漫画多了也能快速找到 |
+| 🖼 **页面显示方式** | 竖长漫画可选「完整显示 / 铺满宽度 / 填充裁切」，不再只能两侧留白 |
 
-**网络**
-- **弱网自动重试**：对所有漫画源透明地重试瞬时网络错误（连接超时、连接重置、服务器 5xx），采用指数退避（~300ms / ~600ms）。上游仅对实现了 `onLoadFailed` JS 钩子的源有重试，弱网下其他源容易一碰就失败。
-- **图片加载性能**：大图缓冲改用 `BytesBuilder`，减少 `List<int>` 反复扩容与复制带来的开销（缩略图与内页均覆盖）。
-- **断点续传校验**：分块下载现在校验 `206 Partial Content`，服务端返回整文件时不再把内容写坏到错误偏移。
-- **更友好的错误提示**：网络错误由原始的 Dio 多行堆栈改为一行简洁的人话描述，保留 Cloudflare 验证与日志导出功能。
+### 🌐 网络增强（相对上游）
 
-**稳定性（崩溃 / 数据正确性）**
-- 修复阅读器在**图片加载完成前**点击、双击或收藏时的空指针崩溃；章节末评论页双击/长按同样不再崩溃。
-- 修复**快速切章 / 退出阅读器**时多处 `setState after dispose` 崩溃（阅读器、章评、加载态共用组件）。
-- 修复**抓取章节目录途中暂停**会静默保存缺章漫画的数据损坏问题。
-- 修复**取消下载后目录不删除、进度永久卡死**的协程死锁。
-- 修复下载取消时文件句柄泄漏、进度定时器泄漏与未捕获异常。
-- 修复图片收藏本地回退传错 id、取消收藏后缓存永不清理的问题。
+- **弱网自动重试**：对所有漫画源透明地重试瞬时网络错误（连接超时、连接重置、服务器 5xx），指数退避。上游仅对实现了 `onLoadFailed` JS 钩子的源有重试，弱网下其他源容易一碰就失败。
+- **图片加载性能**：大图缓冲改用 `BytesBuilder`，减少反复扩容与复制的开销（缩略图与内页均覆盖）。
+- **断点续传校验**：分块下载校验 `206 Partial Content`，服务端返回整文件时不再把内容写坏到错误偏移。
+- **更友好的错误提示**：网络错误由 Dio 多行堆栈改为一行简洁的人话描述，保留 Cloudflare 验证与日志导出。
 
-**汉化**
-- 界面文案**全量简体中文 / 繁体中文**（各 505 条，零缺失）：补齐了上游遗留的未翻译字符串，包括加载对话框、评分弹窗、错误提示、空状态、页码指示器、日志筛选等。
-- **非中文系统下也显示中文**：本 fork 只内置中文翻译，系统语言为非中文时自动回退简体中文（上游会退化成英文原文）。
-- 修正繁体判定：台湾 / 香港 / 澳门设备（`zh-TW`/`zh-HK`/`zh-MO`，无 scriptCode）现在正确显示繁体。
-- 语言选项移除无对应翻译的 `en-US`；新增 zh-CN / zh-TW 应用商店文案。
+### 🛠 稳定性修复（节选）
 
-**阅读体验**
-- **页面显示方式**（设置 → 阅读中）：竖长漫画不再只能两侧留白。可选「完整显示整页」（默认，行为不变）/「铺满屏幕宽度」（可上下拖动看长图）/「填充屏幕」（裁切）。此前该行为硬编码为 `BoxFit.contain`，无法调整。
+- 阅读器在图片加载完成前点击、双击或收藏的空指针崩溃
+- 快速切章 / 退出阅读器时的多处 `setState after dispose` 崩溃
+- 抓取章节目录途中暂停导致的静默数据损坏（缺章）
+- 取消下载后的协程死锁、文件句柄与定时器泄漏
+- 图片收藏传错 id、取消收藏后缓存永不清理
 
-**仓库指向**
-- 关于页的 GitHub 链接、更新检查、更新跳转均指向本 fork（原先指向官方仓库）。
-- 帮助文档与「跳过设置字段」源码链接改指本 fork；后者原先锁定在历史 commit，已改为 master 以免失效。
+### 🌏 全量汉化
 
+- 界面文案**简体 / 繁体全量覆盖（零缺失）**，补齐上游遗留的未翻译字符串
+- 非中文系统下也显示中文（上游会退化成英文原文）；台湾 / 香港 / 澳门设备正确显示繁体
 
-**构建**
-- 独立 Android 构建流水线：`build-android.yml` 可手动触发或打 `v*` tag 触发，自动产出已签名的 release APK 并上传产物 / 发布 Release。
-- 保留 Flutter 迁移器写入的 AGP 兼容开关，新版 Flutter 也能本地构建；签名密钥文件已加入 `.gitignore`。
-- 安装包同时启用 **v1 / v2 / v3 签名方案**，兼容 Android 6 及以上、以及签名校验较严格的国产 ROM。
-- 使用本 fork 独立版本号（`1.6.3-fork.x`），与官方 `1.6.3` 区分；本 fork 各版本之间签名一致，可直接覆盖升级。
+### 🔗 仓库指向与构建
 
-> 上游的 `feat/cdn`、`feat/button-layout` 等实验分支均已落后 master（无独有改动），本 fork 直接基于最新的 master。
+- 关于页、更新检查、帮助文档链接均指向本 fork，应用内可直接检查 fork 更新
+- 独立构建流水线：打 `v*` tag 即自动构建**已签名** release APK 并发布
+- APK 同时启用 **v1 / v2 / v3 签名方案**，兼容 Android 6+ 及签名校验较严格的国产 ROM
+- 独立版本号 `1.6.3-fork.x`，与官方 `1.6.3` 区分；各 fork 版本间签名一致，可直接覆盖升级
+
+## 📥 下载安装
+
+前往 [**Releases**](https://github.com/hea784/venera_0/releases/latest) 下载对应架构的 APK（不确定就选 `universal`），安装即用。
+
+也可以在 [Actions](https://github.com/hea784/venera_0/actions/workflows/build-android.yml) 手动运行 **Build Android APK** 工作流获取最新构建产物。
 
 ### ⚠️ 从官方版迁移到本 fork（重要）
 
-本 fork 使用**自己的签名密钥**，与官方 venera / F-Droid 版不同。Android 禁止用不同签名覆盖安装，因此**从官方版升级时必须先卸载旧版**：
+本 fork 使用**自己的签名密钥**，与官方 venera / F-Droid 版不同。Android 禁止不同签名覆盖安装，因此**从官方版升级必须先卸载旧版**：
 
-1. （可选但推荐）先在旧版 **设置 → Data Sync** 备份数据，或手动记下已配置的漫画源
+1. （可选但推荐）先在旧版 **设置 → Data Sync** 备份数据，或记下已配置的漫画源
 2. 卸载旧版 venera
 3. 安装本 fork 的 APK
 
-> 如果你之前装过本仓库发布的 `v1.6.3-fork.1` / `fork.2`，签名一致，**可以直接覆盖升级，无需卸载**。
+> 之前装过 `v1.6.3-fork.1` / `fork.2` / `fork.3` 的签名一致，**直接覆盖升级即可**。
 
-### 获取 Android 安装包
+## 🧩 已有功能（继承自上游）
 
-前往 [Releases](https://github.com/hea784/venera_0/releases) 下载 `venera-*.apk`；或在 Actions 中手动运行 **Build Android APK** 工作流，构建完成后下载 `venera-apk` 产物。APK 使用仓库内配置的签名密钥签名，同签名的新版本可直接覆盖升级。
+- 阅读本地漫画 / 网络漫画
+- 用 JavaScript 编写漫画源（[venera-configs](https://github.com/venera-app/venera-configs) 生态，见[文档](doc/comic_source.md)）
+- 收藏管理、漫画下载、断点续传
+- 评论、标签等（取决于漫画源支持）
+- WebDAV 数据同步、应用数据导出 / 导入
+- [Headless 模式](doc/headless_doc.md)（桌面端辅助）
 
-### 本地构建
+## 🏗 从源码构建
 
 ```bash
+git clone https://github.com/hea784/venera_0.git
+cd venera_0
 flutter pub get
-flutter build apk --release   # 需要 JDK 17 与 Android SDK
+flutter build apk --release   # 需要 JDK 17、Android SDK 与 Rust
 ```
 
----
+- Flutter **3.41.4**（stable）与其余依赖版本见 `pubspec.yaml`；桌面端构建同理（`windows` / `linux` / `macos`）
+- 漫画源开发：[doc/comic_source.md](doc/comic_source.md) · JS API：[doc/js_api.md](doc/js_api.md)
 
-# venera
-[![flutter](https://img.shields.io/badge/flutter-3.41.4-blue)](https://flutter.dev/)
-[![License](https://img.shields.io/github/license/venera-app/venera)](https://github.com/venera-app/venera/blob/master/LICENSE)
-[![stars](https://img.shields.io/github/stars/venera-app/venera?style=flat)](https://github.com/venera-app/venera/stargazers)
+## 🙏 致谢
 
-[![Download](https://img.shields.io/github/v/release/venera-app/venera)](https://github.com/venera-app/venera/releases)
-[![AUR Version](https://img.shields.io/aur/version/venera-bin)](https://aur.archlinux.org/packages/venera-bin)
-[![F-Droid Version](https://img.shields.io/f-droid/v/com.github.wgh136.venera)](https://f-droid.org/packages/com.github.wgh136.venera/)
+- [venera-app/venera](https://github.com/venera-app/venera) 与作者 [wgh136](https://github.com/wgh136) 的 [PicaComic](https://github.com/wgh136/PicaComic) —— 本项目的上游与前身
+- [EhTagTranslation](https://github.com/EhTagTranslation/Database) —— 漫画标签中文翻译
+- [Mihon](https://github.com/mihonapp/mihon) / [Kotatsu](https://github.com/KotatsuApp/Kotatsu) —— 新功能的灵感来源
 
-A comic reader that support reading local and network comics.
+## 📄 License
 
-## Features
-- Read local comics
-- Use javascript to create comic sources
-- Read comics from network sources
-- Manage favorite comics
-- Download comics
-- View comments, tags, and other information of comics if the source supports
-- Login to comment, rate, and other operations if the source supports
-
-## Build from source
-1. Clone the repository
-2. Install flutter, see [flutter.dev](https://flutter.dev/docs/get-started/install)
-3. Install rust, see [rustup.rs](https://rustup.rs/)
-4. Build for your platform: e.g. `flutter build apk`
-
-## Create a new comic source
-See [Comic Source](doc/comic_source.md)
-
-## Thanks
-
-### Tags Translation
-[EhTagTranslation](https://github.com/EhTagTranslation/Database)
-
-The Chinese translation of the manga tags is from this project.
-
-## Headless Mode
-See [Headless Doc](doc/headless_doc.md)
-
+[GPL-3.0](LICENSE) © 上游作者及本 fork 贡献者
