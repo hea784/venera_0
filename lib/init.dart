@@ -98,7 +98,16 @@ void _checkOldConfigs() {
 
   if (appdata.settings['comicSourceListUrl'].toString().contains("git.nyne.dev")) {
     // migrate to jsdelivr cdn
-    appdata.settings['comicSourceListUrl'] = "https://cdn.jsdelivr.net/gh/venera-app/venera-configs@main/index.json";
+    appdata.settings['comicSourceListUrl'] = "https://cdn.jsdelivr.net/gh/hea784/venera-configs@main/index.json";
+    appdata.saveData();
+  }
+
+  if (appdata.settings['comicSourceListUrl'].toString().contains("venera-app/venera-configs")) {
+    // migrate to this fork's expanded source list (upstream entries are
+    // proxied there with auto-tracking jsdelivr urls, plus audited extras).
+    // Users who prefer the plain upstream list can switch back in
+    // Comic Source -> Repo URL.
+    appdata.settings['comicSourceListUrl'] = "https://cdn.jsdelivr.net/gh/hea784/venera-configs@main/index.json";
     appdata.saveData();
   }
 }
