@@ -59,18 +59,11 @@ A maintained fork of [Venera](https://github.com/venera-app/venera), a comic rea
 - 取消下载后的协程死锁、文件句柄与定时器泄漏
 - 图片收藏传错 id、取消收藏后缓存永不清理
 
-### 📚 书源扩展（1.6.4 起）
+### 📚 扩展源列表（可选）
 
-默认源列表切换为本项目维护的扩展列表（**37 个源**）：上游
-[venera-app/venera-configs](https://github.com/venera-app/venera-configs) 全部 33 个源
-（拷贝漫画、MangaDex、comick、カドコミ、少年ジャンプ＋ 等，经 jsdelivr 直链**自动跟进上游更新**），
-外加 4 个**逐文件安全审计**的免费源：
+默认源列表保持上游 [venera-app/venera-configs](https://github.com/venera-app/venera-configs) 原版。本项目另外维护了一个**扩展列表（37 个源）**供需要的人手动启用：上游全部源（自动跟进上游更新）+ 4 个**逐文件安全审计**的免费中文源（**动漫屋** / **Mangabz** / **极速漫画** / **野蛮漫画**）。
 
-- **动漫屋** / **Mangabz** / **极速漫画** / **野蛮漫画** —— 免费中文漫画站
-
-每个新增源都经过语法校验、域名白名单核对与可疑模式扫描，审计记录见
-[hea784/venera-configs](https://github.com/hea784/venera-configs)。想只用上游原始列表，
-在「漫画源 → 仓库 URL」改回 `https://cdn.jsdelivr.net/gh/venera-app/venera-configs@main/index.json` 即可。
+启用方式：应用「漫画源 → 仓库 URL」填入 `https://cdn.jsdelivr.net/gh/hea784/venera-configs@main/index.json`。审计记录见 [hea784/venera-configs](https://github.com/hea784/venera-configs)。
 
 ### 🌏 全量汉化
 

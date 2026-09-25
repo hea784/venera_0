@@ -5,6 +5,7 @@ import 'package:venera/foundation/comic_source/comic_source.dart';
 import 'package:venera/foundation/comic_type.dart';
 import 'package:venera/foundation/history.dart';
 import 'package:venera/pages/reading_stats_page.dart';
+import 'package:venera/utils/search.dart';
 import 'package:venera/utils/translations.dart';
 
 class HistoryPage extends StatefulWidget {
@@ -46,6 +47,58 @@ class _HistoryPageState extends State<HistoryPage> {
   bool searchMode = false;
   String searchQuery = '';
   var searchController = TextEditingController();
+  String? filterSource;
+
+  String sourceName(String sourceKey) {
+    if (sourceKey == 'local') {
+      return "Local".tl;
+    }
+    return ComicSource.find(sourceKey)?.name ?? sourceKey;
+  }
+
+  Map<String, String> get availableSources {
+    var sources = <String, String>{};
+    for (var c in comics) {
+      sources.putIfAbsent(c.sourceKey, () => sourceName(c.sourceKey));
+    }
+    return sources;
+  }
+
+  void _pickSourceFilter() {
+    var sources = availableSources;
+    showDialog(
+      context: context,
+      builder: (context) {
+        return SimpleDialog(
+          title: Text("Filter by source".tl),
+          children: [
+            ListTile(
+              title: Text("All sources".tl),
+              leading: const Icon(Icons.clear),
+              selected: filterSource == null,
+              onTap: () {
+                setState(() {
+                  filterSource = null;
+                });
+                Navigator.pop(context);
+              },
+            ),
+            for (var entry in sources.entries)
+              ListTile(
+                title: Text(entry.value),
+                selected: filterSource == entry.key,
+                onTap: () {
+                  setState(() {
+                    filterSource = entry.key;
+                  });
+                  Navigator.pop(context);
+                },
+              ),
+          ],
+        );
+      },
+    );
+  }
 
   void _exitSearch() {
     setState(() {
@@ -214,6 +267,11 @@ class _HistoryPageState extends State<HistoryPage> {
         },
       ),
       IconButton(
+        icon: const Icon(Icons.filter_list),
+        tooltip: 'Filter by source'.tl,
+        onPressed: _pickSourceFilter,
+      ),
+      IconButton(
         icon: const Icon(Icons.refresh),
         tooltip: 'Refresh All Histories'.tl,
         onPressed: _refreshAllHistories,
@@ -321,15 +379,20 @@ class _HistoryPageState extends State<HistoryPage> {
               actions: multiSelectMode ? selectActions : normalActions,
             ),
             SliverGridComics(
-              comics: searchQuery.isEmpty
-                  ? comics
-                  : comics
-                        .where(
-                          (c) => c.title.toLowerCase().contains(
-                            searchQuery.toLowerCase(),
-                          ),
-                        )
-                        .toList(),
+              comics: comics
+                  .where(
+                    (c) =>
+                        filterSource == null ||
+                        c.sourceKey == filterSource,
+                  )
+                  .where(
+                    (c) => matchesSearchQuery(searchQuery, [
+                      c.title,
+                      c.subtitle,
+                      sourceName(c.sourceKey),
+                    ]),
+                  )
+                  .toList(),
               selections: selectedComics,
               onLongPressed: null,
               onTap: multiSelectMode

@@ -512,7 +512,15 @@
     "Chapters read": "已读章节",
     "Active days": "活跃天数",
     "Daily reading": "每日阅读",
-    "Last 30 days": "近 30 天"
+    "Last 30 days": "近 30 天",
+    "Search settings": "搜索设置",
+    "Type keywords to find a setting": "输入关键词查找设置",
+    "No matching settings": "未找到匹配的设置",
+    "Filter by source": "按来源筛选",
+    "All sources": "全部来源",
+    "Releases page": "发布页",
+    "Downloading update": "正在下载更新",
+    "Failed to download update": "下载更新失败"
   },
   "zh_TW": {
     "Home": "首頁",
@@ -1027,6 +1035,14 @@
     "Chapters read": "已讀章節",
     "Active days": "活躍天數",
     "Daily reading": "每日閱讀",
-    "Last 30 days": "近 30 天"
+    "Last 30 days": "近 30 天",
+    "Search settings": "搜尋設定",
+    "Type keywords to find a setting": "輸入關鍵詞查找設定",
+    "No matching settings": "未找到匹配的設定",
+    "Filter by source": "按來源篩選",
+    "All sources": "全部來源",
+    "Releases page": "發佈頁",
+    "Downloading update": "正在下載更新",
+    "Failed to download update": "下載更新失敗"
   }
 }

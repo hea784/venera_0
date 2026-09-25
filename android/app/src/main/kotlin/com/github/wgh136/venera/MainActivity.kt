@@ -18,6 +18,7 @@ import androidx.activity.result.contract.ActivityResultContract
 import androidx.activity.result.contract.ActivityResultContracts
 import androidx.core.app.ActivityCompat
 import androidx.core.content.ContextCompat
+import androidx.core.content.FileProvider
 import androidx.documentfile.provider.DocumentFile
 import androidx.lifecycle.Lifecycle
 import androidx.lifecycle.LifecycleEventObserver
@@ -133,6 +134,27 @@ class MainActivity : FlutterFragmentActivity() {
                             res.success(null)
                         else
                             onPickedDirectory(pickedDirectoryUri, res)
+                    }
+                }
+
+                "getAbi" -> res.success(Build.SUPPORTED_ABIS.firstOrNull())
+
+                "installApk" -> {
+                    val path = call.argument<String>("path")
+                    try {
+                        val file = File(path ?: throw IllegalArgumentException("path is null"))
+                        val uri = FileProvider.getUriForFile(
+                            this,
+                            "$packageName.fileProvider",
+                            file
+                        )
+                        val intent = Intent(Intent.ACTION_VIEW)
+                        intent.setDataAndType(uri, "application/vnd.android.package-archive")
+                        intent.addFlags(Intent.FLAG_GRANT_READ_URI_PERMISSION or Intent.FLAG_ACTIVITY_NEW_TASK)
+                        startActivity(intent)
+                        res.success(null)
+                    } catch (e: Exception) {
+                        res.error("INSTALL_ERROR", e.message, null)
                     }
                 }
 

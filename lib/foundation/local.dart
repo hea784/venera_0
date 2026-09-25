@@ -406,11 +406,24 @@ class LocalManager with ChangeNotifier {
   }
 
   List<LocalComic> search(String keyword) {
-    final res = _db.select('''
-      SELECT * FROM comics
-      WHERE title LIKE ? OR tags LIKE ? OR subtitle LIKE ?
-      ORDER BY created_at DESC;
-    ''', ['%$keyword%', '%$keyword%', '%$keyword%']);
+    // whitespace separated tokens, every token must match one of the fields
+    var tokens = keyword
+        .trim()
+        .toLowerCase()
+        .split(RegExp(r'\s+'))
+        .where((e) => e.isNotEmpty)
+        .toList();
+    if (tokens.isEmpty) {
+      return [];
+    }
+    var conditions = tokens
+        .map((_) => '(title LIKE ? OR tags LIKE ? OR subtitle LIKE ?)')
+        .join(' AND ');
+    var args = tokens.expand((t) => ['%$t%', '%$t%', '%$t%']).toList();
+    final res = _db.select(
+      'SELECT * FROM comics WHERE $conditions ORDER BY created_at DESC;',
+      args,
+    );
     return res.map((row) => LocalComic.fromRow(row)).toList();
   }
 

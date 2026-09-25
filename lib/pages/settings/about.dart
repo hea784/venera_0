@@ -77,22 +77,71 @@ class _AboutSettingsState extends State<AboutSettings> {
   }
 }
 
-Future<bool> checkUpdate() async {
+/// Returns the newer version found on the remote, or null when the installed
+/// version is up to date / the check failed.
+Future<String?> checkUpdate() async {
   var res = await AppDio()
       .get("https://cdn.jsdelivr.net/gh/hea784/venera_0@master/pubspec.yaml");
   if (res.statusCode == 200) {
     var data = loadYaml(res.data);
     if (data["version"] != null) {
-      return compareVersion(data["version"].split("+")[0], App.version);
+      var remote = data["version"].split("+")[0];
+      if (compareVersion(remote, App.version)) {
+        return remote;
+      }
     }
   }
-  return false;
+  return null;
+}
+
+/// Downloads the release APK for [version] and opens the system installer.
+///
+/// ponytail: the apk url is derived from this fork's release asset naming
+/// (`venera-<version>-<abi>.apk` on tag `v<version>`); if the asset is missing
+/// (release not published yet) the error path falls back to the releases page.
+Future<void> _downloadAndInstallUpdate(String version) async {
+  var cancelToken = CancelToken();
+  var controller = showLoadingDialog(
+    App.rootContext,
+    withProgress: true,
+    allowCancel: true,
+    message: "Downloading update".tl,
+    onCancel: () => cancelToken.cancel(),
+  );
+  try {
+    var abi = await const MethodChannel("venera/method_channel")
+        .invokeMethod<String>("getAbi");
+    var asset = "venera-$version-${abi ?? "universal"}.apk";
+    var url =
+        "https://github.com/hea784/venera_0/releases/download/v$version/$asset";
+    var dir = App.externalStoragePath ?? App.cachePath;
+    var path = FilePath.join(dir, "update_$version.apk");
+    await AppDio().download(
+      url,
+      path,
+      cancelToken: cancelToken,
+      onReceiveProgress: (received, total) {
+        if (total > 0) {
+          controller.setProgress(received / total);
+        }
+      },
+    );
+    controller.close();
+    await const MethodChannel("venera/method_channel")
+        .invokeMethod("installApk", {"path": path});
+  } catch (e) {
+    if (!cancelToken.isCancelled) {
+      controller.close();
+      App.rootContext.showMessage(message: "Failed to download update".tl);
+      launchUrlString("https://github.com/hea784/venera_0/releases");
+    }
+  }
 }
 
 Future<void> checkUpdateUi([bool showMessageIfNoUpdate = true, bool delay = false]) async {
   try {
-    var value = await checkUpdate();
-    if (value) {
+    var remote = await checkUpdate();
+    if (remote != null) {
       if (delay) {
         await Future.delayed(const Duration(seconds: 2));
       }
@@ -111,6 +160,18 @@ Future<void> checkUpdateUi([bool showMessageIfNoUpdate = true, bool delay = fals
                     Navigator.pop(context);
                     launchUrlString(
                         "https://github.com/hea784/venera_0/releases");
+                  },
+                  child: Text("Releases page".tl),
+                ),
+                Button.filled(
+                  onPressed: () {
+                    Navigator.pop(context);
+                    if (App.isAndroid) {
+                      _downloadAndInstallUpdate(remote);
+                    } else {
+                      launchUrlString(
+                          "https://github.com/hea784/venera_0/releases");
+                    }
                   },
                   child: Text("Update".tl),
                 ),
