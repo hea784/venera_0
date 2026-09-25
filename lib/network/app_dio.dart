@@ -139,6 +139,30 @@ class AppDio with DioMixin {
 
   static final Map<String, bool> _requests = {};
 
+  /// Whether an error is a transient network/server failure that is likely to
+  /// succeed if the request is retried (weak mobile networks, connection resets,
+  /// overloaded servers). 4xx client errors and cancellations are not retried.
+  static bool isTransientError(DioException err) {
+    switch (err.type) {
+      case DioExceptionType.connectionTimeout:
+      case DioExceptionType.sendTimeout:
+      case DioExceptionType.receiveTimeout:
+      case DioExceptionType.connectionError:
+        return true;
+      case DioExceptionType.badResponse:
+        final code = err.response?.statusCode;
+        return code != null && code >= 500;
+      case DioExceptionType.unknown:
+        final msg = err.toString();
+        return msg.contains("Connection reset by peer") ||
+            msg.contains("Connection terminated") ||
+            msg.contains("Connection closed") ||
+            msg.contains("SocketException");
+      default:
+        return false;
+    }
+  }
+
   @override
   Future<Response<T>> request<T>(
     String path, {
@@ -157,15 +181,25 @@ class AppDio with DioMixin {
       options!.headers!.remove('prevent-parallel');
     }
     try {
-      return super.request<T>(
-        path,
-        data: data,
-        queryParameters: queryParameters,
-        cancelToken: cancelToken,
-        options: options,
-        onSendProgress: onSendProgress,
-        onReceiveProgress: onReceiveProgress,
-      );
+      var attempt = 0;
+      while (true) {
+        try {
+          return await super.request<T>(
+            path,
+            data: data,
+            queryParameters: queryParameters,
+            cancelToken: cancelToken,
+            options: options,
+            onSendProgress: onSendProgress,
+            onReceiveProgress: onReceiveProgress,
+          );
+        } on DioException catch (e) {
+          if (attempt >= 2 || !isTransientError(e)) rethrow;
+          attempt++;
+          // Exponential backoff: ~300ms, ~600ms.
+          await Future.delayed(Duration(milliseconds: 300 << (attempt - 1)));
+        }
+      }
     } finally {
       if (_requests.containsKey(path)) {
         _requests.remove(path);
