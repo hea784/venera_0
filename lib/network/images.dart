@@ -63,20 +63,22 @@ abstract class ImageDownloader {
     if (expectedBytes == -1) {
       expectedBytes = null;
     }
-    var buffer = <int>[];
-    await for (var data in stream) {
-      buffer.addAll(data);
+    final builder = BytesBuilder(copy: false);
+    var received = 0;
+    await for (var chunk in stream) {
+      builder.add(chunk);
+      received += chunk.length;
       if (expectedBytes != null) {
         yield ImageDownloadProgress(
-          currentBytes: buffer.length,
+          currentBytes: received,
           totalBytes: expectedBytes,
         );
       }
     }
+    var buffer = builder.takeBytes();
 
     if (configs['onResponse'] is JSInvokable) {
-      final uint8List = Uint8List.fromList(buffer);
-      buffer = (configs['onResponse'] as JSInvokable)([uint8List]);
+      buffer = (configs['onResponse'] as JSInvokable)([buffer]);
       (configs['onResponse'] as JSInvokable).free();
     }
 
@@ -175,35 +177,32 @@ abstract class ImageDownloader {
         if (expectedBytes == -1) {
           expectedBytes = null;
         }
-        var buffer = <int>[];
-        await for (var data in stream) {
-          buffer.addAll(data);
+        final builder = BytesBuilder(copy: false);
+        var received = 0;
+        await for (var chunk in stream) {
+          builder.add(chunk);
+          received += chunk.length;
           yield ImageDownloadProgress(
-            currentBytes: buffer.length,
+            currentBytes: received,
             totalBytes: expectedBytes,
           );
         }
+        var buffer = builder.takeBytes();
 
         if (configs['onResponse'] is JSInvokable) {
-          dynamic result = (configs['onResponse'] as JSInvokable)([Uint8List.fromList(buffer)]);
+          dynamic result = (configs['onResponse'] as JSInvokable)([buffer]);
           if (result is Future) {
             result = await result;
           }
           if (result is List<int>) {
-            buffer = result;
+            buffer = Uint8List.fromList(result);
           } else {
             throw "Error: Invalid onResponse result.";
           }
           (configs['onResponse'] as JSInvokable).free();
         }
 
-        Uint8List data;
-        if (buffer is Uint8List) {
-          data = buffer;
-        } else {
-          data = Uint8List.fromList(buffer);
-          buffer.clear();
-        }
+        var data = buffer;
 
         if (configs['modifyImage'] != null) {
           var newData = await modifyImageWithScript(

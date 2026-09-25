@@ -20,6 +20,26 @@ class NetworkError extends StatelessWidget {
 
   final Widget? action;
 
+  /// Turn a raw Dio/exception string into a short, user-friendly sentence.
+  ///
+  /// Dio's `toString()` can be a long multi-line dump (request options, headers,
+  /// even stack traces). Show only the human-readable cause and keep it concise.
+  static String friendlyMessage(String raw) {
+    var msg = raw.trim();
+    // "DioException [connection error]: Connection reset by peer"
+    final dioMatch = RegExp(r'^DioException\s*\[[^\]]*\]:\s*(.*)$',
+            dotAll: true)
+        .firstMatch(msg);
+    if (dioMatch != null) {
+      msg = dioMatch.group(1)!.trim();
+    }
+    msg = msg.replaceAll(RegExp(r'\s+'), ' ');
+    if (msg.length > 160) {
+      msg = "${msg.substring(0, 157)}...";
+    }
+    return msg;
+  }
+
   @override
   Widget build(BuildContext context) {
     var cfe = CloudflareException.fromString(message);
@@ -45,10 +65,15 @@ class NetworkError extends StatelessWidget {
             ),
           ),
           const SizedBox(height: 8),
-          Text(
-            cfe == null ? message : "Cloudflare verification required".tl,
-            textAlign: TextAlign.center,
-            maxLines: 3,
+          Padding(
+            padding: const EdgeInsets.symmetric(horizontal: 24),
+            child: Text(
+              cfe == null
+                  ? friendlyMessage(message)
+                  : "Cloudflare verification required".tl,
+              textAlign: TextAlign.center,
+              maxLines: 4,
+            ),
           ),
           TextButton(
             onPressed: () {
