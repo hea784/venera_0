@@ -21,6 +21,7 @@ import 'package:venera/foundation/res.dart';
 import 'package:venera/network/download.dart';
 import 'package:venera/network/cache.dart';
 import 'package:venera/pages/favorites/favorites_page.dart';
+import 'package:venera/pages/comic_source_page.dart';
 import 'package:venera/pages/reader/reader.dart';
 import 'package:venera/utils/file_type.dart';
 import 'package:venera/utils/io.dart';
@@ -122,7 +123,18 @@ class _ComicPageState extends LoadingState<ComicPage, ComicDetails>
         },
       );
     }
-    return NetworkError(message: error!, retry: retry, action: action);
+    var source = ComicSource.find(widget.sourceKey);
+    return NetworkError(
+      message: error!,
+      retry: retry,
+      action: action,
+      onUpdateSource:
+          source == null
+              ? null
+              : () {
+                ComicSourcePage.update(source);
+              },
+    );
   }
 
   @override

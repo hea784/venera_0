@@ -8,6 +8,7 @@ class NetworkError extends StatelessWidget {
     this.withAppbar = true,
     this.buttonText,
     this.action,
+    this.onUpdateSource,
   });
 
   final String message;
@@ -19,6 +20,10 @@ class NetworkError extends StatelessWidget {
   final String? buttonText;
 
   final Widget? action;
+
+  /// When provided, a "Update source" button is offered for errors that look
+  /// like comic-source failures (script error / unreachable source).
+  final VoidCallback? onUpdateSource;
 
   /// Turn a raw Dio/exception string into a short, user-friendly sentence.
   ///
@@ -40,9 +45,51 @@ class NetworkError extends StatelessWidget {
     return msg;
   }
 
+  /// Errors thrown by the comic source script (e.g. a stale source config that
+  /// dereferences an undefined value). Raw JS stacks are meaningless to users.
+  static bool isSourceScriptError(String raw) {
+    // JS stack frames look like (JM:39:63); the flutter_qjs engine appends
+    // frames with <eval> markers.
+    if (raw.contains("<eval>")) return true;
+    return RegExp(r'\(\w+:\d+:\d+\)').hasMatch(raw);
+  }
+
+  /// Errors where the source server could not be reached at all.
+  static bool isConnectError(String raw) {
+    const patterns = [
+      "Connection error",
+      "connection error",
+      "RhttpConnectionException",
+      "hyper_util",
+      "SocketException",
+      "Connection reset",
+      "Connection closed",
+      "connection terminated",
+    ];
+    return patterns.any(raw.contains);
+  }
+
+  /// Plain-language explanation for source-side failures, or null when the
+  /// error is not classifiable.
+  static String? explainError(String raw) {
+    if (isSourceScriptError(raw)) {
+      return "The comic source failed to run. Its config may be outdated or its domain may be dead. Try updating the source, or refresh the domain list in the source settings."
+          .tl;
+    }
+    if (isConnectError(raw)) {
+      return "Cannot reach the comic source server. The domain may be blocked or dead. Check your network or proxy, or refresh the domain list in the source settings."
+          .tl;
+    }
+    return null;
+  }
+
   @override
   Widget build(BuildContext context) {
     var cfe = CloudflareException.fromString(message);
+    var explanation = cfe == null ? explainError(message) : null;
+    var technical = cfe == null
+        ? friendlyMessage(message)
+        : "Cloudflare verification required".tl;
     Widget body = Center(
       child: Column(
         mainAxisSize: MainAxisSize.min,
@@ -68,13 +115,23 @@ class NetworkError extends StatelessWidget {
           Padding(
             padding: const EdgeInsets.symmetric(horizontal: 24),
             child: Text(
-              cfe == null
-                  ? friendlyMessage(message)
-                  : "Cloudflare verification required".tl,
+              explanation ?? technical,
               textAlign: TextAlign.center,
-              maxLines: 4,
+              maxLines: explanation == null ? 4 : 6,
             ),
           ),
+          if (explanation != null)
+            Padding(
+              padding: const EdgeInsets.fromLTRB(24, 8, 24, 0),
+              child: Text(
+                technical,
+                textAlign: TextAlign.center,
+                style: ts.s12.copyWith(
+                  color: context.colorScheme.onSurfaceVariant,
+                ),
+                maxLines: 3,
+              ),
+            ),
           TextButton(
             onPressed: () {
               saveFile(
@@ -85,6 +142,14 @@ class NetworkError extends StatelessWidget {
             child: Text("Export logs".tl),
           ),
           const SizedBox(height: 8),
+          if (onUpdateSource != null &&
+              (isSourceScriptError(message) || isConnectError(message)))
+            OutlinedButton.icon(
+              onPressed: onUpdateSource,
+              icon: const Icon(Icons.sync, size: 18),
+              label: Text("Update source".tl),
+            ),
+          if (retry != null) const SizedBox(height: 8),
           if (retry != null)
             if (cfe != null)
               FilledButton(

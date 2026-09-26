@@ -522,7 +522,10 @@
     "Downloading update": "正在下载更新",
     "Failed to download update": "下载更新失败",
     "Feedback": "反馈",
-    "Feedback, suggestions and help": "反馈、建议与帮助"
+    "Feedback, suggestions and help": "反馈、建议与帮助",
+    "The comic source failed to run. Its config may be outdated or its domain may be dead. Try updating the source, or refresh the domain list in the source settings.": "漫画源执行出错。源配置可能已过期或域名已失效，请尝试更新该源，或在源设置中刷新域名列表。",
+    "Cannot reach the comic source server. The domain may be blocked or dead. Check your network or proxy, or refresh the domain list in the source settings.": "无法连接到漫画源服务器。域名可能已被墙或已失效，请检查网络/代理，或在源设置中刷新域名列表。",
+    "Update source": "更新源"
   },
   "zh_TW": {
     "Home": "首頁",
@@ -1047,6 +1050,9 @@
     "Downloading update": "正在下載更新",
     "Failed to download update": "下載更新失敗",
     "Feedback": "回饋",
-    "Feedback, suggestions and help": "回饋、建議與幫助"
+    "Feedback, suggestions and help": "回饋、建議與幫助",
+    "The comic source failed to run. Its config may be outdated or its domain may be dead. Try updating the source, or refresh the domain list in the source settings.": "漫畫源執行出錯。源設定可能已過期或域名已失效，請嘗試更新該源，或在源設定中重新整理網域清單。",
+    "Cannot reach the comic source server. The domain may be blocked or dead. Check your network or proxy, or refresh the domain list in the source settings.": "無法連線到漫畫源伺服器。網域可能已被封鎖或已失效，請檢查網路/代理，或在源設定中重新整理網域清單。",
+    "Update source": "更新源"
   }
 }
