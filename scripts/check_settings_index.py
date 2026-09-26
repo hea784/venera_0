@@ -60,6 +60,9 @@ NON_INDEXABLE = {
     "Releases page",
     "Update",
     "Run",
+    # failure dialog / buttons in about.dart
+    "Failed to download update",
+    "Retry",
 }
 
 TITLE_PATTERNS = [
