@@ -1,0 +1,32 @@
+name: Purge jsDelivr CDN
+
+# The in-app update check reads pubspec.yaml from jsDelivr. Without a purge,
+# the CDN keeps serving a stale version for up to 12 hours after a release, so
+# users get "no new version available" right after a new APK is published.
+
+on:
+  push:
+    branches:
+      - master
+  release:
+    types: [published]
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  purge:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Purge pubspec.yaml from jsDelivr
+        run: |
+          URL="https://purge.jsdelivr.net/gh/${{ github.repository }}@master/pubspec.yaml"
+          echo "Purging: $URL"
+          code=$(curl -s -o /dev/null -w "%{http_code}" --max-time 15 "$URL")
+          echo "HTTP $code"
+          if [ "$code" = "200" ] || [ "$code" = "201" ] || [ "$code" = "303" ]; then
+            echo "Purge requested"
+          else
+            echo "::warning::jsDelivr purge returned $code (cache may be stale)"
+          fi
