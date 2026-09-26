@@ -65,6 +65,17 @@ const settingsIndex = <SettingsEntryRef>[
   SettingsEntryRef("Show Page Number", 1),
   SettingsEntryRef("Show Chapter Comments", 1),
   SettingsEntryRef("Show Comments at Chapter End", 1),
+  SettingsEntryRef(
+    "The number of pic in screen for landscape (Only Gallery Mode)",
+    1,
+  ),
+  SettingsEntryRef(
+    "The number of pic in screen for portrait (Only Gallery Mode)",
+    1,
+  ),
+  SettingsEntryRef("Long press to zoom", 1),
+  SettingsEntryRef("Enable comic specific settings", 1),
+  SettingsEntryRef("Enable device specific settings", 1),
   // Appearance
   SettingsEntryRef("Theme Mode", 2),
   SettingsEntryRef("Theme Color", 2),
@@ -87,6 +98,12 @@ const settingsIndex = <SettingsEntryRef>[
   SettingsEntryRef("User", 4),
   SettingsEntryRef("Language", 4),
   SettingsEntryRef("Authorization Required", 4),
+  SettingsEntryRef("Storage Path for local comics", 4),
+  SettingsEntryRef("Cache Size", 4),
+  SettingsEntryRef("Logs", 4),
+  SettingsEntryRef("Skip Setting Fields", 4),
+  SettingsEntryRef("Auto Sync Data", 4),
+  SettingsEntryRef("Disable Length Limitation", 4),
   // Network
   SettingsEntryRef("Proxy", 5),
   SettingsEntryRef("Enable DNS Overrides", 5),
@@ -97,4 +114,9 @@ const settingsIndex = <SettingsEntryRef>[
   SettingsEntryRef("Check for updates", 6),
   SettingsEntryRef("Check for updates on startup", 6),
   SettingsEntryRef("Github", 6),
+  SettingsEntryRef("Feedback", 6),
+  // Debug
+  SettingsEntryRef("Reload Configs", 7),
+  SettingsEntryRef("Open Log", 7),
+  SettingsEntryRef("Ignore Certificate Errors", 7),
 ];

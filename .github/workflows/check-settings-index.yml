@@ -1,0 +1,25 @@
+name: Check settings index
+
+on:
+  push:
+    paths:
+      - "lib/pages/settings/**"
+      - "lib/foundation/settings_index.dart"
+      - "scripts/check_settings_index.py"
+  pull_request:
+    paths:
+      - "lib/pages/settings/**"
+      - "lib/foundation/settings_index.dart"
+      - "scripts/check_settings_index.py"
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  check:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - name: Check settings search index coverage
+        run: python3 scripts/check_settings_index.py

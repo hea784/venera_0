@@ -134,6 +134,21 @@ Future<void> _downloadAndInstallUpdate(String version) async {
         }
       },
     );
+    // Corruption guard: a truncated download (or an HTML error body saved as
+    // the APK) would otherwise be handed to the installer. Real integrity is
+    // still enforced by Android: the installer refuses packages whose
+    // signature differs from the installed app.
+    var apk = File(path);
+    var header = await apk.openRead(0, 2).fold<List<int>>(
+      <int>[],
+      (acc, chunk) => acc..addAll(chunk),
+    );
+    if (header.length < 2 || header[0] != 0x50 || header[1] != 0x4B) {
+      throw "Downloaded file is not a valid APK";
+    }
+    if (await apk.length() < 1024 * 1024) {
+      throw "Downloaded APK is too small";
+    }
     controller.close();
     await const MethodChannel("venera/method_channel")
         .invokeMethod("installApk", {"path": path});
