@@ -49,24 +49,30 @@ class NetworkError extends StatelessWidget {
   /// dereferences an undefined value). Raw JS stacks are meaningless to users.
   static bool isSourceScriptError(String raw) {
     // JS stack frames look like (JM:39:63); the flutter_qjs engine appends
-    // frames with <eval> markers.
+    // frames with <eval> markers. Anchored JS error headers avoid catching
+    // Dart errors ("TypeError: type 'Null' is not a subtype...").
     if (raw.contains("<eval>")) return true;
-    return RegExp(r'\(\w+:\d+:\d+\)').hasMatch(raw);
+    if (RegExp(r'\(\w+:\d+:\d+\)').hasMatch(raw)) return true;
+    return RegExp(
+      r'^\s*(ReferenceError|SyntaxError|Illegal invocation|TypeError):',
+    ).hasMatch(raw) &&
+        RegExp(r'\bat \w+').hasMatch(raw);
   }
 
   /// Errors where the source server could not be reached at all.
+  static final _connectPatterns = <RegExp>[
+    RegExp(r'connection error', caseSensitive: false),
+    RegExp(r'rhttp\w*exception', caseSensitive: false),
+    RegExp(r'hyper_util'),
+    RegExp(r'socke?texception', caseSensitive: false),
+    RegExp(r'connection (reset|closed|terminated|refused)', caseSensitive: false),
+    RegExp(r'relative url without a base', caseSensitive: false),
+    RegExp(r'failed host lookup|unable to resolve host', caseSensitive: false),
+    RegExp(r'network is unreachable', caseSensitive: false),
+  ];
+
   static bool isConnectError(String raw) {
-    const patterns = [
-      "Connection error",
-      "connection error",
-      "RhttpConnectionException",
-      "hyper_util",
-      "SocketException",
-      "Connection reset",
-      "Connection closed",
-      "connection terminated",
-    ];
-    return patterns.any(raw.contains);
+    return _connectPatterns.any((r) => r.hasMatch(raw));
   }
 
   /// Plain-language explanation for source-side failures, or null when the

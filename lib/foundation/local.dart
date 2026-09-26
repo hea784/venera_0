@@ -12,6 +12,7 @@ import 'package:venera/foundation/log.dart';
 import 'package:venera/network/download.dart';
 import 'package:venera/pages/reader/reader.dart';
 import 'package:venera/utils/io.dart';
+import 'package:venera/utils/search.dart';
 
 import 'app.dart';
 import 'history.dart';
@@ -407,19 +408,21 @@ class LocalManager with ChangeNotifier {
 
   List<LocalComic> search(String keyword) {
     // whitespace separated tokens, every token must match one of the fields
-    var tokens = keyword
-        .trim()
-        .toLowerCase()
-        .split(RegExp(r'\s+'))
-        .where((e) => e.isNotEmpty)
-        .toList();
+    var tokens = splitSearchTokens(keyword);
     if (tokens.isEmpty) {
       return [];
     }
     var conditions = tokens
-        .map((_) => '(title LIKE ? OR tags LIKE ? OR subtitle LIKE ?)')
+        .map(
+          (_) =>
+              r"(title LIKE ? ESCAPE '\' OR tags LIKE ? ESCAPE '\' "
+              r"OR subtitle LIKE ? ESCAPE '\')",
+        )
         .join(' AND ');
-    var args = tokens.expand((t) => ['%$t%', '%$t%', '%$t%']).toList();
+    var args = tokens.expand((t) {
+      var p = '%${escapeLike(t)}%';
+      return [p, p, p];
+    }).toList();
     final res = _db.select(
       'SELECT * FROM comics WHERE $conditions ORDER BY created_at DESC;',
       args,

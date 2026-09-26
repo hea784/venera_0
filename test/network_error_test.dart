@@ -29,6 +29,23 @@ void main() {
     expect(NetworkError.explainError(connectError), isNotNull);
   });
 
+  test("classifies other observed network failures", () {
+    // seen on emulator: a relative cover url hit the http layer
+    expect(
+      NetworkError.isConnectError(
+        "DioException [unknown]: [RhttpUnknownException] relative URL without a base",
+      ),
+      isTrue,
+    );
+    // case-insensitive matching
+    expect(NetworkError.isConnectError("SOCKETEXCEPTION: broken"), isTrue);
+    expect(NetworkError.isConnectError("CONNECTION RESET BY PEER"), isTrue);
+    expect(
+      NetworkError.isConnectError("Failed host lookup: example.com"),
+      isTrue,
+    );
+  });
+
   test("unrelated errors stay raw", () {
     const generic = "Something else went wrong";
     expect(NetworkError.isSourceScriptError(generic), isFalse);

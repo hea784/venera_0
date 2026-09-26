@@ -12,6 +12,7 @@ import 'package:venera/foundation/comic_source/comic_source.dart';
 import 'package:venera/foundation/favorites.dart';
 import 'package:venera/foundation/js_engine.dart';
 import 'package:venera/foundation/local.dart';
+import 'package:venera/foundation/settings_index.dart';
 import 'package:venera/foundation/log.dart';
 import 'package:venera/network/app_dio.dart';
 import 'package:venera/utils/data.dart';
@@ -49,16 +50,9 @@ class _SettingsPageState extends State<SettingsPage> {
 
   bool get enableTwoViews => context.width > 720;
 
-  static const categories = <String>[
-    "Explore",
-    "Reading",
-    "Appearance",
-    "Local Favorites",
-    "APP",
-    "Network",
-    "About",
-    "Debug"
-  ];
+  /// Section names live in [settingsSectionNames] so the main page and the
+  /// settings search index can never drift apart.
+  static const categories = settingsSectionNames;
 
   final icons = <IconData>[
     Icons.explore,

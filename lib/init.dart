@@ -96,17 +96,18 @@ void _checkOldConfigs() {
     appdata.writeImplicitData();
   }
 
-  if (appdata.settings['comicSourceListUrl'].toString().contains("git.nyne.dev")) {
-    // migrate to jsdelivr cdn
-    appdata.settings['comicSourceListUrl'] = "https://cdn.jsdelivr.net/gh/venera-app/venera-configs@main/index.json";
+  var listUrl = appdata.settings['comicSourceListUrl'].toString();
+  var needsMigration =
+      listUrl.contains("git.nyne.dev") || listUrl.contains("hea784/venera-configs");
+  // One-shot: the reverse migration must not run on every startup, or a user
+  // who deliberately opts into the expanded fork list gets flipped back to
+  // upstream on the next launch (which makes the opt-in impossible to keep).
+  if (needsMigration && appdata.implicitData['sourceListMigrated'] != true) {
+    appdata.settings['comicSourceListUrl'] =
+        "https://cdn.jsdelivr.net/gh/venera-app/venera-configs@main/index.json";
+    appdata.implicitData['sourceListMigrated'] = true;
     appdata.saveData();
-  }
-
-  if (appdata.settings['comicSourceListUrl'].toString().contains("hea784/venera-configs")) {
-    // migrate back to the upstream list (the expanded fork list is optional;
-    // it can be added manually in Comic Source -> Repo URL).
-    appdata.settings['comicSourceListUrl'] = "https://cdn.jsdelivr.net/gh/venera-app/venera-configs@main/index.json";
-    appdata.saveData();
+    appdata.writeImplicitData();
   }
 }
 

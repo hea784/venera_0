@@ -31,4 +31,11 @@ void main() {
     expect(splitSearchTokens(" Abc  def "), ["abc", "def"]);
     expect(splitSearchTokens(""), isEmpty);
   });
+
+  test("escapeLike neutralizes LIKE wildcards", () {
+    expect(escapeLike("100%"), r"100\%");
+    expect(escapeLike("a_b"), r"a\_b");
+    expect(escapeLike(r"c\path"), r"c\\path");
+    expect(escapeLike("normal"), "normal");
+  });
 }
