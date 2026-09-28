@@ -86,20 +86,43 @@ class _AboutSettingsState extends State<AboutSettings> {
 }
 
 /// Returns the newer version found on the remote, or null when the installed
-/// version is up to date / the check failed.
+/// version is up to date. Throws only when every source is unreachable, so the
+/// UI can tell "check failed" apart from "no new version".
 Future<String?> checkUpdate() async {
-  var res = await AppDio()
-      .get("https://cdn.jsdelivr.net/gh/hea784/venera_0@master/pubspec.yaml");
-  if (res.statusCode == 200) {
-    var data = loadYaml(res.data);
-    if (data["version"] != null) {
-      var remote = data["version"].split("+")[0];
-      if (compareVersion(remote, App.version)) {
-        return remote;
+  Object? lastError;
+  // Source 1: jsDelivr mirror of pubspec.yaml - fast and reachable from China.
+  try {
+    var res = await AppDio()
+        .get("https://cdn.jsdelivr.net/gh/hea784/venera_0@master/pubspec.yaml");
+    if (res.statusCode == 200) {
+      var data = loadYaml(res.data);
+      if (data["version"] != null) {
+        var remote = data["version"].split("+")[0];
+        if (compareVersion(remote, App.version)) {
+          return remote;
+        }
+        return null;
       }
     }
+  } catch (e) {
+    lastError = e;
   }
-  return null;
+  // Source 2: GitHub latest-release API (no auth needed, rate limited).
+  try {
+    var res = await AppDio()
+        .get("https://api.github.com/repos/hea784/venera_0/releases/latest");
+    if (res.statusCode == 200) {
+      var tag = jsonDecode(res.data)["tag_name"] as String?;
+      var remote = tag?.startsWith("v") == true ? tag!.substring(1) : tag;
+      if (remote != null && compareVersion(remote, App.version)) {
+        return remote;
+      }
+      return null;
+    }
+  } catch (e) {
+    lastError = e;
+  }
+  throw lastError ?? "No update source reachable";
 }
 
 /// Downloads the release APK for [version] and opens the system installer.

@@ -18,6 +18,20 @@ DioException err(
 }
 
 void main() {
+  test("fixAcceptEncoding strips zstd, keeps others, is case-insensitive", () {
+    var headers = {"Accept-Encoding": "gzip, deflate, br, zstd"};
+    fixAcceptEncoding(headers);
+    expect(headers["Accept-Encoding"], "gzip, deflate, br");
+
+    headers = {"accept-encoding": "zstd"};
+    fixAcceptEncoding(headers);
+    expect(headers.containsKey("accept-encoding"), isFalse);
+
+    headers = {"Accept-Encoding": "gzip"};
+    fixAcceptEncoding(headers);
+    expect(headers["Accept-Encoding"], "gzip");
+  });
+
   test("timeouts and connection errors are transient", () {
     for (var t in [
       DioExceptionType.connectionTimeout,

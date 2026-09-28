@@ -1230,7 +1230,10 @@ class LocalFavoritesManager with ChangeNotifier {
 
   void markAsRead(String id, ComicType type) {
     var folder = appdata.settings['followUpdatesFolder'];
-    if (!existsFolder(folder)) {
+    // followUpdatesFolder defaults to null; without this guard, opening any
+    // comic in the reader throws "type 'Null' is not a subtype of String"
+    // for users who never picked a follow-updates folder.
+    if (folder is! String || !existsFolder(folder)) {
       return;
     }
     _db.execute("""

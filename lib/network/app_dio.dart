@@ -15,6 +15,28 @@ import 'cookie_jar.dart';
 
 export 'package:dio/dio.dart';
 
+/// rhttp cannot decode zstd-encoded bodies. Some source configs advertise
+/// "zstd" in Accept-Encoding, so servers (e.g. Cloudflare) return zstd bodies
+/// that arrive as binary garbage and break the source's JS with
+/// "SyntaxError" / "Invalid Data". Strip what the http client cannot decode.
+void fixAcceptEncoding(Map<String, dynamic> headers) {
+  for (var key in headers.keys.toList()) {
+    if (key.toLowerCase() != "accept-encoding") continue;
+    var value = headers[key];
+    if (value is! String || !value.contains("zstd")) continue;
+    var parts = value
+        .split(",")
+        .map((e) => e.trim())
+        .where((e) => e.isNotEmpty && e != "zstd")
+        .toList();
+    if (parts.isEmpty) {
+      headers.remove(key);
+    } else {
+      headers[key] = parts.join(", ");
+    }
+  }
+}
+
 class MyLogInterceptor implements Interceptor {
   @override
   void onError(DioException err, ErrorInterceptorHandler handler) {
@@ -96,6 +118,7 @@ class MyLogInterceptor implements Interceptor {
 
   @override
   void onRequest(RequestOptions options, RequestInterceptorHandler handler) {
+    fixAcceptEncoding(options.headers);
     const String headerMask = "********";
     const String dataMask = "****** DATA_PROTECTED ******";
     Log.info(
