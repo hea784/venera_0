@@ -1,3 +1,5 @@
+import 'dart:convert';
+
 import 'package:flutter/material.dart';
 import 'package:venera/foundation/appdata.dart';
 import 'package:venera/pages/categories_page.dart';
@@ -7,6 +9,8 @@ import 'package:venera/utils/translations.dart';
 
 import '../components/components.dart';
 import '../foundation/app.dart';
+import '../foundation/crash_recorder.dart';
+import '../utils/io.dart';
 import 'explore_page.dart';
 import 'favorites/favorites_page.dart';
 import 'home_page.dart';
@@ -42,6 +46,46 @@ class _MainPageState extends State<MainPage> {
     App.mainNavigatorKey = _navigatorKey;
     index = int.tryParse(appdata.settings['initialPage'].toString()) ?? 0;
     super.initState();
+    WidgetsBinding.instance.addPostFrameCallback((_) => _offerDiagnostic());
+  }
+
+  /// If the previous run ended with an unhandled error, offer to export a
+  /// diagnostic bundle - that's how the last crash in this app got reported.
+  void _offerDiagnostic() {
+    if (!mounted) return;
+    var crash = CrashRecorder.take();
+    if (crash == null) return;
+    showDialog(
+      context: App.rootContext,
+      builder: (context) {
+        return ContentDialog(
+          title: "Detected a crash last run".tl,
+          content: Text(
+            "The last run ended with an unhandled error. "
+            "Export a diagnostic bundle for the bug report?"
+                .tl,
+          ).paddingHorizontal(16),
+          actions: [
+            Button.text(
+              onPressed: () => Navigator.pop(context),
+              child: Text("Ignore".tl),
+            ),
+            Button.filled(
+              onPressed: () {
+                Navigator.pop(context);
+                CrashRecorder.buildBundle(crash).then((text) {
+                  saveFile(
+                    data: utf8.encode(text),
+                    filename: 'venera-diagnostic.txt',
+                  );
+                });
+              },
+              child: Text("Export diagnostic".tl),
+            ),
+          ],
+        );
+      },
+    );
   }
 
   final _pages = [

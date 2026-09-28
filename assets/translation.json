@@ -525,7 +525,18 @@
     "Feedback, suggestions and help": "反馈、建议与帮助",
     "The comic source failed to run. Its config may be outdated or its domain may be dead. Try updating the source, or refresh the domain list in the source settings.": "漫画源执行出错。源配置可能已过期或域名已失效，请尝试更新该源，或在源设置中刷新域名列表。",
     "Cannot reach the comic source server. The domain may be blocked or dead. Check your network or proxy, or refresh the domain list in the source settings.": "无法连接到漫画源服务器。域名可能已被墙或已失效，请检查网络/代理，或在源设置中刷新域名列表。",
-    "Update source": "更新源"
+    "Update source": "更新源",
+    "Blocked": "已屏蔽",
+    "Like": "点赞",
+    "Liked": "已点赞",
+    "Title copied": "标题已复制",
+    "Update check failed": "更新检查失败",
+    "Detected a crash last run": "检测到上次运行异常",
+    "The last run ended with an unhandled error. Export a diagnostic bundle for the bug report?": "上次运行因未处理异常结束。导出诊断包以便反馈问题？",
+    "Ignore": "忽略",
+    "Export diagnostic": "导出诊断包",
+    "@a Tasks": "@a 个任务",
+    "Deleted @a favorite items": "已删除 @a 个收藏项"
   },
   "zh_TW": {
     "Home": "首頁",
@@ -1053,6 +1064,17 @@
     "Feedback, suggestions and help": "回饋、建議與幫助",
     "The comic source failed to run. Its config may be outdated or its domain may be dead. Try updating the source, or refresh the domain list in the source settings.": "漫畫源執行出錯。源設定可能已過期或域名已失效，請嘗試更新該源，或在源設定中重新整理網域清單。",
     "Cannot reach the comic source server. The domain may be blocked or dead. Check your network or proxy, or refresh the domain list in the source settings.": "無法連線到漫畫源伺服器。網域可能已被封鎖或已失效，請檢查網路/代理，或在源設定中重新整理網域清單。",
-    "Update source": "更新源"
+    "Update source": "更新源",
+    "Blocked": "已封鎖",
+    "Like": "點讚",
+    "Liked": "已點讚",
+    "Title copied": "標題已複製",
+    "Update check failed": "更新檢查失敗",
+    "Detected a crash last run": "偵測到上次執行異常",
+    "The last run ended with an unhandled error. Export a diagnostic bundle for the bug report?": "上次執行因未處理異常結束。匯出診斷包以便回報問題？",
+    "Ignore": "忽略",
+    "Export diagnostic": "匯出診斷包",
+    "@a Tasks": "@a 個任務",
+    "Deleted @a favorite items": "已刪除 @a 個收藏項"
   }
 }

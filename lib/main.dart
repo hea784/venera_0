@@ -13,6 +13,7 @@ import 'package:window_manager/window_manager.dart';
 import 'components/components.dart';
 import 'components/window_frame.dart';
 import 'foundation/app.dart';
+import 'foundation/crash_recorder.dart';
 import 'foundation/appdata.dart';
 import 'headless.dart';
 import 'init.dart';
@@ -53,6 +54,7 @@ void main(List<String> args) {
       }
     }, (error, stack) {
       Log.error("Unhandled Exception", error, stack);
+      CrashRecorder.record(error, stack);
     });
   });
 }

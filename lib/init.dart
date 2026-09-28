@@ -8,6 +8,7 @@ import 'package:rhttp/rhttp.dart';
 import 'package:venera/foundation/app.dart';
 import 'package:venera/foundation/cache_manager.dart';
 import 'package:venera/foundation/comic_source/comic_source.dart';
+import 'package:venera/foundation/crash_recorder.dart';
 import 'package:venera/foundation/js_engine.dart';
 import 'package:venera/foundation/log.dart';
 import 'package:venera/network/cookie_jar.dart';
@@ -65,6 +66,11 @@ Future<void> init() async {
   }
   FlutterError.onError = (details) {
     Log.error("Unhandled Exception", "${details.exception}\n${details.stack}");
+    CrashRecorder.record(details.exception, details.stack);
+  };
+  PlatformDispatcher.instance.onError = (error, stack) {
+    CrashRecorder.record(error, stack);
+    return false;
   };
   if (App.isWindows) {
     // Report to the monitor thread that the app is running

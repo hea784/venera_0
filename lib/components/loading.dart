@@ -9,6 +9,7 @@ class NetworkError extends StatelessWidget {
     this.buttonText,
     this.action,
     this.onUpdateSource,
+    this.onOpenSourceManager,
   });
 
   final String message;
@@ -24,6 +25,10 @@ class NetworkError extends StatelessWidget {
   /// When provided, a "Update source" button is offered for errors that look
   /// like comic-source failures (script error / unreachable source).
   final VoidCallback? onUpdateSource;
+
+  /// When provided, a shortcut to the comic source manager, where each
+  /// source's own settings live (e.g. JM's "Refresh Domain List").
+  final VoidCallback? onOpenSourceManager;
 
   /// Turn a raw Dio/exception string into a short, user-friendly sentence.
   ///
@@ -154,6 +159,12 @@ class NetworkError extends StatelessWidget {
               onPressed: onUpdateSource,
               icon: const Icon(Icons.sync, size: 18),
               label: Text("Update source".tl),
+            ),
+          if (onOpenSourceManager != null)
+            OutlinedButton.icon(
+              onPressed: onOpenSourceManager,
+              icon: const Icon(Icons.source_outlined, size: 18),
+              label: Text("Comic Source".tl),
             ),
           if (retry != null) const SizedBox(height: 8),
           if (retry != null)

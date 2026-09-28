@@ -128,6 +128,9 @@ class _ComicPageState extends LoadingState<ComicPage, ComicDetails>
       message: error!,
       retry: retry,
       action: action,
+      onOpenSourceManager: () {
+        context.to(() => const ComicSourcePage());
+      },
       onUpdateSource:
           source == null
               ? null

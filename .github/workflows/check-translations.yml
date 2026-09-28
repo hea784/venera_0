@@ -1,0 +1,25 @@
+name: Check translations
+
+on:
+  push:
+    paths:
+      - "lib/**"
+      - "assets/translation.json"
+      - "scripts/check_translations.py"
+  pull_request:
+    paths:
+      - "lib/**"
+      - "assets/translation.json"
+      - "scripts/check_translations.py"
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  check:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - name: Check translation coverage
+        run: python3 scripts/check_translations.py
